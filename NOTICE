@@ -1,0 +1,32 @@
+diagram-motion
+==============
+
+This skill's diagram vocabulary — the shape-carries-meaning grammar, the
+per-type layout contracts, the complexity budgets, and the "one accent per
+figure" rule — is adapted from:
+
+  diagram-design
+  https://github.com/cathrynlavery/diagram-design
+  Copyright (c) 2025 Cathryn Lavery
+  Licensed under the MIT License
+
+What was adapted:
+  - Shape semantics (stadium = terminal, rectangle = step, diamond = decision,
+    ring + hub = loop) and the rule that shape, not fill colour, carries type
+  - Parametric layout contracts: explicit inputs -> deterministic geometry
+  - Complexity budgets per figure (node / edge / accent caps)
+  - The "editorial-paper" style profile's palette and type roles
+
+What is new here:
+  - The "soft-gradient" style profile (palette sampled from reference footage)
+  - WCAG-AA corrections to both palettes (the upstream `soft` token fails AA)
+  - The motion grammar: entrance/exit vocabulary, seam rules, the three gates
+  - The three-tier output model (still PNG / self-playing HTML / narrated MP4)
+  - All scripts (font subsetting, contrast gate, PNG render, keyframe emitter)
+
+diagram-design is a reference, not a dependency. This skill does not vendor,
+execute, or require any of its code.
+
+Fonts referenced by this skill (Inter, Instrument Serif, Geist, Noto Sans SC,
+Noto Serif SC) are licensed under the SIL Open Font License 1.1 by their
+respective authors and are fetched at build time, not vendored here.

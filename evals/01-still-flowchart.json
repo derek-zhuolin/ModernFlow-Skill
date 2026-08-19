@@ -1,0 +1,16 @@
+{
+  "name": "still flowchart, no dependencies",
+  "skills": ["diagram-motion"],
+  "query": "Make me a diagram of our support triage: a ticket comes in, we check whether it's a known issue, if yes we send the canned reply and close it, if no it goes to an engineer, and either way it ends up in the weekly review. Landscape, and I want a PNG.",
+  "files": [],
+  "expected_behavior": [
+    "Chooses the still tier and does NOT build a video project",
+    "Chooses flowchart (the path ends) rather than loop, even though 'ends up in the weekly review' could be misread as a cycle",
+    "Uses shape to carry type: stadium for start/end, rectangle for steps, diamond for the known-issue decision",
+    "Labels BOTH edges out of the decision",
+    "Applies exactly one accent, on a terminal node — not on the decision",
+    "Runs scripts/check_contrast.py and it exits 0",
+    "Runs scripts/build.py --png and produces a self-contained .html plus a .png",
+    "If no Chrome is present, still delivers the .html and says the PNG needs Chrome — does not fail silently or claim success"
+  ]
+}

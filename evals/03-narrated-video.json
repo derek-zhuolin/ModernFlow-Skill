@@ -1,0 +1,18 @@
+{
+  "name": "narrated vertical video from a comparison",
+  "skills": ["diagram-motion"],
+  "query": "Turn this into a 20-second vertical video with narration: the difference between giving an agent a goal and letting it iterate, versus drawing the whole path in advance and letting it only walk that path.",
+  "files": [],
+  "expected_behavior": [
+    "Checks whether HyperFrames is available BEFORE promising an MP4",
+    "If HyperFrames is absent: delivers the motion tier and states plainly that MP4 needs it — does not invent a rendering pipeline and does not silently downgrade",
+    "Builds narration BEFORE the picture",
+    "Splits the script into short lines, synthesises each separately, and derives every frame timing from MEASURED durations — never from a characters-per-second estimate",
+    "Sets act-ending gaps from how long the picture still needs to perform, not from punctuation",
+    "Uses a different transition on each adjacent seam, and leaves no blank gap at a seam",
+    "Varies the headline entrance per scene while keeping one uniform exit",
+    "Spaces sound cues against measured file durations and puts transition sounds on their own track",
+    "Verifies the rendered MP4 with ffprobe and inspects frames pulled from the rendered file, not the preview",
+    "Every number stated on screen is read off the real artefact"
+  ]
+}

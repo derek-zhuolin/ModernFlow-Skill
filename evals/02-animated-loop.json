@@ -1,0 +1,16 @@
+{
+  "name": "self-playing animated loop, portrait, CJK copy",
+  "skills": ["diagram-motion"],
+  "query": "做一个竖版的动图，讲我们的内容循环：选题 → 写 → 发布 → 看数据 → 回到选题，中间是「读者画像」这个共享的东西。要能直接在浏览器里播，我没装什么视频工具。",
+  "files": [],
+  "expected_behavior": [
+    "Chooses the motion tier — one self-playing HTML — and does not require any video framework",
+    "Chooses loop over flowchart, and includes the dashed write-back spokes to the centre hub (without them it is only a circular process)",
+    "Uses a portrait viewBox (540x960) and a TALL ellipse (ry > rx), not a landscape ratio re-cropped",
+    "Derives arc endpoints from the station cards' own boundaries, so no arc floats free of its card",
+    "Accents the edge that closes the loop (last station back to first)",
+    "Runs scripts/fetch_fonts.py so the Chinese glyphs are subsetted, and INLINES the font CSS rather than linking it",
+    "Runs scripts/check_contrast.py and it exits 0",
+    "The delivered HTML opens in a browser and animates with no server, no build step, and no network"
+  ]
+}

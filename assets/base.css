@@ -1,0 +1,216 @@
+/* diagram-motion — base.css
+ *
+ * Everything a standalone diagram needs: style tokens, text roles, shape
+ * classes, and a pure-CSS motion vocabulary. No JavaScript, no libraries.
+ *
+ * Timing model
+ * ------------
+ * Every animated element carries a class and one inline custom property:
+ *
+ *     <g class="dm dm-rise" style="--at:1.42s">…</g>
+ *
+ * `--at` is the element's start time on the figure's timeline. That single
+ * number is also what the video tier feeds to GSAP, so one timing table drives
+ * both outputs and they cannot drift apart.
+ *
+ * Path drawing uses the SVG `pathLength="1"` attribute rather than measuring
+ * geometry in JavaScript:
+ *
+ *     <path class="dm dm-draw" pathLength="1" style="--at:2.0s" d="…"/>
+ *
+ * With pathLength="1" the dash units are normalised, so `stroke-dasharray: 1`
+ * always means "exactly one full length" no matter how long the path really is.
+ *
+ * Profiles
+ * --------
+ * Set `data-profile="soft-gradient"` or `data-profile="editorial-paper"` on the
+ * root element. Values mirror assets/tokens.json; see reference/style-profiles.md
+ * for why the grey ramps are darker than they look in the source imagery.
+ */
+
+/* ─────────────────────────────────────────────────────────── tokens ───── */
+
+[data-profile="soft-gradient"] {
+  --paper: #fbfdfd;
+  --ink: #17181a;
+  --muted: #5e6470;
+  --soft: #585c60;
+  --rule: rgba(23, 24, 26, 0.10);
+  --card: #ffffff;
+  --accent: #0071ec;
+  --accent-tint: rgba(0, 113, 236, 0.07);
+  --accent-text: #0071ec;   /* the blue clears AA as text, so it is its own text token */
+  --arrow: #c9ccd1;
+  --glow-warm: #fec0e2;
+  --glow-cool: #a8ecf0;
+
+  --font-display: "Inter", system-ui, sans-serif;
+  --font-title: "Noto Sans SC", "Inter", system-ui, sans-serif;
+  --font-node: "Noto Sans SC", "Inter", system-ui, sans-serif;
+  --font-eyebrow: "Inter", "Noto Sans SC", system-ui, sans-serif;
+  --font-body: "Noto Sans SC", "Inter", system-ui, sans-serif;
+
+  --w-title: 900;
+  --w-node: 700;
+
+  --dur: 0.40s;
+  --dur-fast: 0.30s;
+}
+
+[data-profile="editorial-paper"] {
+  --paper: #f5f5f5;
+  --paper-2: #ececec;
+  --ink: #2d3142;
+  --muted: #4f5d75;
+  --soft: #586377;
+  --rule: rgba(45, 49, 66, 0.12);
+  --rule-solid: #bfc0c0;
+  --card: #ffffff;
+  --accent: #eb6c36;
+  --accent-ink: #a33f14;
+  --accent-tint: rgba(235, 108, 54, 0.08);
+  --accent-text: #a33f14;   /* the orange is 2.86:1 as text — stroke only. This is its text-safe twin. */
+  --arrow: #4f5d75;
+  --link: #2e5aa8;
+
+  --font-display: "Instrument Serif", "Noto Serif SC", Georgia, serif;
+  --font-title: "Instrument Serif", "Noto Serif SC", Georgia, serif;
+  --font-node: "Geist", "Noto Sans SC", system-ui, sans-serif;
+  --font-eyebrow: "Geist Mono", "Noto Sans SC", ui-monospace, monospace;
+  --font-body: "Geist", "Noto Sans SC", system-ui, sans-serif;
+  --font-sublabel: "Geist Mono", "Noto Sans SC", ui-monospace, monospace;
+
+  --w-title: 400;
+  --w-node: 600;
+
+  --dur: 0.44s;
+  --dur-fast: 0.34s;
+}
+
+/* ─────────────────────────────────────────────────────────── canvas ───── */
+
+.dm-stage {
+  position: relative;
+  overflow: hidden;
+  background: var(--paper);
+}
+.dm-stage > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* ──────────────────────────────────────────────────────── text roles ───── */
+/* Sizes are viewBox units. Author at the profile's viewBox, render at 2x. */
+
+.dm-eyebrow {
+  font-family: var(--font-eyebrow);
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  fill: var(--soft);
+}
+.dm-title   { font-family: var(--font-title); font-size: 54px; font-weight: var(--w-title); letter-spacing: -0.02em; fill: var(--ink); }
+.dm-display { font-family: var(--font-display); font-size: 86px; font-weight: 900; letter-spacing: -0.035em; fill: var(--ink); }
+.dm-lede    { font-family: var(--font-body); font-size: 15px; font-weight: 400; fill: var(--muted); }
+.dm-node    { font-family: var(--font-node); font-size: 17px; font-weight: var(--w-node); fill: var(--ink); text-anchor: middle; }
+.dm-sub     { font-family: var(--font-eyebrow); font-size: 9px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; fill: var(--soft); text-anchor: middle; }
+.dm-edge    { font-family: var(--font-eyebrow); font-size: 12px; font-weight: 500; letter-spacing: 0.06em; fill: var(--muted); text-anchor: middle; }
+.dm-tag     { font-family: var(--font-eyebrow); font-size: 10px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; fill: var(--soft); }
+.dm-num     { font-family: var(--font-display); font-size: 26px; font-weight: 900; letter-spacing: -0.02em; fill: var(--accent-text); }
+
+/* The one background layer that is allowed to be huge and nearly invisible.
+   It is a layer, not decoration: it names the figure at poster scale. */
+.dm-watermark { font-family: var(--font-display); font-size: 176px; font-weight: 900; letter-spacing: -0.03em; fill: var(--ink); opacity: 0.04; }
+
+/* ─────────────────────────────────────────────────────────── shapes ───── */
+
+.dm-card    { fill: var(--card); }
+.dm-store   { fill: var(--ink); }                       /* dark hub / shared state */
+.dm-ghost   { fill: rgba(0, 0, 0, 0.03); stroke: rgba(0, 0, 0, 0.30); stroke-width: 1; }
+.dm-focal   { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 2; }
+.dm-flow    { fill: none; stroke: var(--arrow); stroke-width: 1.4; }
+.dm-flow-a  { fill: none; stroke: var(--accent); stroke-width: 2.4; stroke-linecap: round; }
+.dm-dash    { fill: none; stroke: rgba(0, 0, 0, 0.22); stroke-width: 1.4; stroke-dasharray: 5 5; }
+.dm-head    { fill: var(--arrow); }
+.dm-head-a  { fill: var(--accent); }
+.dm-rule    { stroke: var(--rule); stroke-width: 1; }
+
+/* Hand-drawn marker: a blue oval or underline scribbled around something that
+   matters. Pair with filter="url(#dm-sketch)" (defined in the template). */
+.dm-mark    { fill: none; stroke: var(--accent); stroke-width: 2.4; stroke-linecap: round; }
+
+/* Card lift is an SVG filter (#dm-lift, defined in the template), applied to
+   the SHAPE with filter="url(#dm-lift)" — never as a CSS class on the group.
+   Two reasons, both of which bite:
+     1. CSS drop-shadow() on an SVG element clips to that element's default
+        filter region and leaves a hard edge partway through the shadow.
+     2. The entrance animation animates the CSS `filter` property. A CSS
+        drop-shadow on the same element loses that fight and vanishes.
+   Putting the SVG filter on the child shape and the animation on the parent
+   group keeps them out of each other's way. */
+
+/* Bordered card — the editorial-paper register draws its cards instead of
+   floating them. Pairs with a flat paper and no shadow. */
+.dm-card-lined { fill: var(--card); stroke: var(--ink); stroke-width: 1; }
+
+/* ──────────────────────────────────────────────────── motion vocabulary ── */
+/* Four entrances, one exit. Use a different entrance per scene; keep the exit
+   identical everywhere. Rationale in reference/motion-grammar.md. */
+
+.dm {
+  animation-delay: var(--at, 0s);
+  animation-duration: var(--dur);
+  animation-fill-mode: both;          /* hidden before --at, settled after */
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);   /* expo-out */
+}
+
+@keyframes dm-rise   { from { opacity: 0; transform: translateY(20px);  filter: blur(8px); }
+                       to   { opacity: 1; transform: none;              filter: blur(0);  } }
+@keyframes dm-settle { from { opacity: 0; transform: translateY(-14px); filter: blur(8px); }
+                       to   { opacity: 1; transform: none;              filter: blur(0);  } }
+@keyframes dm-widen  { from { opacity: 0; transform: scale(0.94);       filter: blur(8px); }
+                       to   { opacity: 1; transform: none;              filter: blur(0);  } }
+@keyframes dm-slide  { from { opacity: 0; transform: translateX(22px);  filter: blur(8px); }
+                       to   { opacity: 1; transform: none;              filter: blur(0);  } }
+
+/* Node entrance: smaller displacement than a title, same blur discipline.
+   Position and sharpness must resolve together — moving without blurring is
+   what reads as "stiff". */
+@keyframes dm-pop    { from { opacity: 0; transform: translateY(14px) scale(0.985); filter: blur(6px); }
+                       to   { opacity: 1; transform: none;                          filter: blur(0);  } }
+
+@keyframes dm-out    { from { opacity: 1; transform: none;              filter: blur(0);  }
+                       to   { opacity: 0; transform: translateY(-16px); filter: blur(8px); } }
+
+.dm-rise   { animation-name: dm-rise; }
+.dm-settle { animation-name: dm-settle; }
+.dm-widen  { animation-name: dm-widen; }
+.dm-slide  { animation-name: dm-slide; }
+.dm-pop    { animation-name: dm-pop; animation-duration: var(--dur); }
+.dm-out    { animation-name: dm-out; animation-duration: var(--dur-fast);
+             animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }  /* power3-in */
+
+/* Stroke draw. Requires pathLength="1" on the element — then one dash unit is
+   one full path and no JavaScript measurement is needed. */
+@keyframes dm-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.dm-draw {
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  animation-name: dm-draw;
+  animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);   /* power4-in-out */
+}
+
+/* Arrowheads land after their line arrives, never with it. */
+@keyframes dm-tip { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: none; } }
+.dm-tip { animation-name: dm-tip; animation-duration: 0.22s; }
+
+/* One-shot emphasis. Never loop this: a pulse that repeats stops reading as
+   emphasis and starts reading as idle wobble. */
+@keyframes dm-flash { 0% { opacity: 1; } 35% { opacity: 0.35; } 100% { opacity: 1; } }
+.dm-flash { animation-name: dm-flash; animation-duration: 0.58s; }
+
+/* Transform origins must be explicit on SVG children, otherwise scale and
+   translate pivot on the whole canvas instead of the element. */
+.dm, .dm-draw, .dm-tip, .dm-flash { transform-box: fill-box; transform-origin: center; }
+
+/* Honour the reader's setting for the standalone HTML tier. The video tier
+   renders frames and is unaffected. */
+@media (prefers-reduced-motion: reduce) {
+  .dm, .dm-draw, .dm-tip, .dm-flash { animation: none !important; opacity: 1 !important;
+    transform: none !important; filter: none !important; stroke-dashoffset: 0 !important; }
+}
