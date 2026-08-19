@@ -39,7 +39,7 @@ cp "$SKILL/assets/template.html" figure.html
 # edit figure.html: replace the figure, the chrome text, and the --at times
 
 python3 "$SKILL/scripts/fetch_fonts.py" figure.html --profile soft-gradient
-python3 "$SKILL/scripts/check_contrast.py" figure.html      # gate — do not skip
+python3 "$SKILL/scripts/check_contrast.py" figure.html      # gate — must exit 0
 python3 "$SKILL/scripts/build.py" figure.html --png         # self-contained html + png
 ```
 

@@ -149,6 +149,14 @@ def main() -> int:
         return 2
     html = args.page.read_text(encoding="utf-8")
 
+    # The page may not have been through build.py yet, in which case its
+    # <style> still holds the marker instead of the stylesheet. Pull base.css
+    # in directly so the gate works whichever order the caller runs things in.
+    if "/* @BASE_CSS@ */" in html:
+        base = SKILL_ROOT / "assets/base.css"
+        if base.exists():
+            html = html.replace("/* @BASE_CSS@ */", base.read_text(encoding="utf-8"), 1)
+
     profile = args.profile
     if not profile:
         m = re.search(r'data-profile\s*=\s*["\']([\w-]+)["\']', html)
@@ -196,9 +204,19 @@ def main() -> int:
 
     if args.json:
         print(json.dumps({"profile": profile, "scale": args.scale,
-                          "failures": failures, "checks": rows},
+                          "failures": failures, "checks": rows,
+                          "empty": not rows},
                          ensure_ascii=False, indent=2))
-        return 1 if failures else 0
+        return 2 if not rows else (1 if failures else 0)
+
+    if not rows:
+        print("✗ nothing to check — no CSS rule in this page both sets a fill and\n"
+              "  names or sizes a font, so no text role was found.\n"
+              "  A gate with zero checks is not a pass. Likely causes:\n"
+              "    · the stylesheet has not been inlined yet — run scripts/build.py\n"
+              "    · the page styles text with presentation attributes instead of CSS",
+              file=sys.stderr)
+        return 2
 
     print(f"contrast · profile {profile} · scale {args.scale}x · "
           f"{len(rows)} checks against {len(backgrounds)} background(s)")

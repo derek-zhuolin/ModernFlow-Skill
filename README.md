@@ -50,7 +50,7 @@ cp assets/template.html figure.html
 # edit: the figure, the chrome text, the --at times
 
 python3 scripts/fetch_fonts.py figure.html --profile soft-gradient
-python3 scripts/check_contrast.py figure.html      # WCAG AA gate
+python3 scripts/check_contrast.py figure.html      # WCAG AA gate — must exit 0
 python3 scripts/build.py figure.html --png
 ```
 

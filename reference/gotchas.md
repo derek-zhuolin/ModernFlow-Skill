@@ -15,7 +15,8 @@ it presents, why it happens, and the fix.
 7. The contrast checker flags an element mid-fade
 8. A short line with a Latin word trips a duration check
 9. A vertical layout leaves the bottom third empty
-10. Placeholder numbers survive to the render
+10. A gate passes with nothing to check
+11. Placeholder numbers survive to the render
 
 ---
 
@@ -164,7 +165,21 @@ it with a placeholder.
 
 ---
 
-## 10 · Placeholder numbers survive to the render
+## 10 · A gate passes with nothing to check
+
+**Presents as:** `check_contrast.py` reports "all 0 pass" and exits 0.
+
+**Why:** it was run on a page whose stylesheet had not been inlined yet, so
+there were no CSS text rules to inspect. Zero checks is not a pass — it is a
+green light over an empty room, which is worse than a red one.
+
+**Fix:** the script now resolves `base.css` itself and exits non-zero when it
+finds no text roles at all. The general lesson applies to any gate you add:
+**an empty result set must fail, never pass.**
+
+---
+
+## 11 · Placeholder numbers survive to the render
 
 **Presents as:** a confident-looking figure stating something false.
 
