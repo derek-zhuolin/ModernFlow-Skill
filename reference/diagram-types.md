@@ -53,12 +53,12 @@ overview plus a detail figure.
 
 | Shape | Means | Class |
 | --- | --- | --- |
-| Stadium (`rx` = half height) | start / end | `dm-card` + `rx=23` |
-| Rectangle (`rx` 6–13) | a step, a thing | `dm-card` |
-| Diamond | a decision | `dm-card` as `<polygon>` |
-| Dark filled box | shared state, the hub | `dm-store` |
-| Ghost box (3% fill, 30% stroke) | inert / dead-end / external | `dm-ghost` |
-| Accent-tinted box | **the** focal node | `dm-focal` |
+| Stadium (`rx` = half height) | start / end | `mf-card` + `rx=23` |
+| Rectangle (`rx` 6–13) | a step, a thing | `mf-card` |
+| Diamond | a decision | `mf-card` as `<polygon>` |
+| Dark filled box | shared state, the hub | `mf-store` |
+| Ghost box (3% fill, 30% stroke) | inert / dead-end / external | `mf-ghost` |
+| Accent-tinted box | **the** focal node | `mf-focal` |
 
 **Grid:** every coordinate divisible by 4.
 
@@ -176,7 +176,7 @@ terminal), so the reader reads them as a pair, not as two unrelated highlights.
 ## Steps — a linear process
 
 Boxes on one axis, arrows between, no branching. Number them (`01`, `02`, …) in
-`dm-num` — the numbering is the structure. Cap at 6; beyond that the reader
+`mf-num` — the numbering is the structure. Cap at 6; beyond that the reader
 stops counting and it should become Layers or a Tree.
 
 Optional: a rail of short notes alongside, one per step, entering with its step.
@@ -208,7 +208,7 @@ too small to label.
 ## Matrix — two axes
 
 Square canvas. Axis lines through the centre, axis labels at the four ends in
-`dm-eyebrow`. Items are dots plus labels; the quadrant they land in is the
+`mf-eyebrow`. Items are dots plus labels; the quadrant they land in is the
 claim, so place them from real values, not from where they look tidy. Optionally
 tint the one quadrant you are arguing for with `--accent-tint`.
 
@@ -219,11 +219,11 @@ tint the one quadrant you are arguing for with `--accent-tint`.
 The end-card workhorse. Three parts on one baseline:
 
 ```
-left term   (dm-display, text-anchor=end,  x = 196)
+left term   (mf-display, text-anchor=end,  x = 196)
 arrow       (drawn path + head, accent, y = baseline - 16)
-right term  (dm-display, x = 272)
-sublabel    (dm-lede, x = 272, y = baseline + 32)
-hairline    (dm-rule, full width, y = baseline + 64)
+right term  (mf-display, x = 272)
+sublabel    (mf-lede, x = 272, y = baseline + 32)
+hairline    (mf-rule, full width, y = baseline + 64)
 ```
 
 Two or three rows stacked. The arrow is **drawn**, never a typed `→` — a real
@@ -236,7 +236,7 @@ path can be animated and matches the figure's other arrows.
 The opening-card pattern: a label/value pair per row with a hairline under each.
 
 ```
-label  (dm-node, x = 48)          value  (dm-lede, x = 140)
+label  (mf-node, x = 48)          value  (mf-lede, x = 140)
 hairline full width, 22px below the baseline
 row pitch 70
 ```

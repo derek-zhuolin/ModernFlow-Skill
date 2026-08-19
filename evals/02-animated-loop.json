@@ -1,6 +1,6 @@
 {
   "name": "self-playing animated loop, portrait, CJK copy",
-  "skills": ["diagram-motion"],
+  "skills": ["modernflow"],
   "query": "做一个竖版的动图，讲我们的内容循环：选题 → 写 → 发布 → 看数据 → 回到选题，中间是「读者画像」这个共享的东西。要能直接在浏览器里播，我没装什么视频工具。",
   "files": [],
   "expected_behavior": [

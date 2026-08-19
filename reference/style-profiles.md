@@ -93,7 +93,7 @@ The field never moves. A slowly drifting background is idle wobble.
 No fields, no grain. Optional 22×22 dot pattern at 10% ink, at ~55% opacity —
 use it for long-form hero figures, not by default.
 
-Cards are **drawn**, not floated: `dm-card-lined` (white fill, 1px ink stroke),
+Cards are **drawn**, not floated: `mf-card-lined` (white fill, 1px ink stroke),
 no shadow. Mixing the two card treatments in one figure looks like an accident.
 
 The `primitive-sketchy` displacement filter belongs here: `feTurbulence`
@@ -109,13 +109,13 @@ Both profiles fill the same slots; only the families change.
 
 | Class | Role | soft-gradient | editorial-paper |
 | --- | --- | --- | --- |
-| `dm-display` | the big word | Inter 900 · 86px | Instrument Serif 400 |
-| `dm-title` | headline | Noto Sans SC 900 · 54px | Instrument Serif 400 |
-| `dm-eyebrow` | section label | Inter 500 · 11px · `.2em` · caps | Geist Mono 500 |
-| `dm-node` | node name | Noto Sans SC 700 · 17px | Geist 600 |
-| `dm-sub` | node sublabel | Inter 500 · 9px · `.14em` · caps | Geist Mono 400 |
-| `dm-edge` | edge label | 12px | Geist Mono |
-| `dm-lede` / `dm-tag` / `dm-num` | body / corner tag / section number | — | — |
+| `mf-display` | the big word | Inter 900 · 86px | Instrument Serif 400 |
+| `mf-title` | headline | Noto Sans SC 900 · 54px | Instrument Serif 400 |
+| `mf-eyebrow` | section label | Inter 500 · 11px · `.2em` · caps | Geist Mono 500 |
+| `mf-node` | node name | Noto Sans SC 700 · 17px | Geist 600 |
+| `mf-sub` | node sublabel | Inter 500 · 9px · `.14em` · caps | Geist Mono 400 |
+| `mf-edge` | edge label | 12px | Geist Mono |
+| `mf-lede` / `mf-tag` / `mf-num` | body / corner tag / section number | — | — |
 
 Three families maximum: one display, one text, one mono. A fourth reads as
 indecision.

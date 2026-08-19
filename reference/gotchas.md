@@ -65,7 +65,7 @@ shadow disappearing entirely once the element animates.
 
 **Fix:** define an SVG `<filter>` with a generous region (`x=-40% y=-40%
 width=180% height=200%`) and apply it to the **shape** with
-`filter="url(#dm-lift)"`, while the animation classes go on the **parent
+`filter="url(#mf-lift)"`, while the animation classes go on the **parent
 group**. They then never touch the same property.
 
 ---

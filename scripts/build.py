@@ -65,7 +65,7 @@ SETTLE_MS = 4000
 
 
 def find_chrome() -> str | None:
-    if env := os.environ.get("DIAGRAM_MOTION_CHROME"):
+    if env := os.environ.get("MODERNFLOW_CHROME"):
         return env if Path(env).exists() else None
     for name in ("google-chrome", "chromium", "chrome"):
         if found := shutil.which(name):
@@ -170,7 +170,7 @@ def main() -> int:
         print("\n✗ no Chrome or Chromium found, so no PNG was rendered.\n"
               "  The HTML above is complete — open it in any browser and it plays.\n"
               "  For an automated PNG, install Chrome, or point at one you have:\n"
-              "      export DIAGRAM_MOTION_CHROME=/path/to/chrome", file=sys.stderr)
+              "      export MODERNFLOW_CHROME=/path/to/chrome", file=sys.stderr)
         return 3
 
     png = Path(args.png) if isinstance(args.png, str) else out.with_suffix(".png")

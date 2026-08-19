@@ -1,4 +1,4 @@
-# diagram-motion
+# ModernFlow
 
 An [Agent Skill](https://code.claude.com/docs/en/skills) for building editorial
 diagrams that move — flowcharts, loops, decision trees, layer stacks,
@@ -24,7 +24,7 @@ still *look* fine.
 Copy the folder into your skills directory:
 
 ```bash
-git clone https://github.com/<you>/diagram-motion.git ~/.claude/skills/diagram-motion
+git clone https://github.com/<you>/modernflow.git ~/.claude/skills/modernflow
 ```
 
 - **Claude Code / Agent SDK** — `~/.claude/skills/` (personal) or

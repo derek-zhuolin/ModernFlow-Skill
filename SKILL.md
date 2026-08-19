@@ -1,10 +1,10 @@
 ---
-name: diagram-motion
+name: modernflow
 description: Builds editorial diagrams that move — flowcharts, loops and cycles, decision trees, layer stacks, side-by-side comparisons — and ships them as a still PNG, a self-playing HTML animation, or a narrated video. Provides two modern visual profiles, a pure-CSS motion vocabulary, WCAG-AA contrast gating, and glyph-level font subsetting. Use when someone asks for a diagram, flowchart, loop or cycle graphic, process or architecture figure, explainer visual, concept comparison, or a short vertical or landscape video built from diagrams. The still and animated tiers need nothing but a browser; the video tier uses HyperFrames when it is installed.
 license: MIT
 ---
 
-# diagram-motion
+# ModernFlow
 
 Editorial diagrams, animated. One visual system, one motion vocabulary, three
 output tiers that share a single timing table so they cannot drift apart.
@@ -33,7 +33,7 @@ not silently downgrade and do not invent a rendering pipeline.
 ## Quick start
 
 ```bash
-SKILL=path/to/diagram-motion          # wherever this skill is installed
+SKILL=path/to/modernflow          # wherever this skill is installed
 
 cp "$SKILL/assets/template.html" figure.html
 # edit figure.html: replace the figure, the chrome text, and the --at times
@@ -117,5 +117,5 @@ All stdlib Python 3, no `pip install`.
 | `scripts/check_contrast.py` | WCAG-AA gate over every text role against every background it can sit on |
 
 `build.py --png` finds Chrome on its own. Point it somewhere specific with
-`DIAGRAM_MOTION_CHROME=/path/to/chrome`. With no Chrome it still writes the
+`MODERNFLOW_CHROME=/path/to/chrome`. With no Chrome it still writes the
 HTML and says so — the deliverable is not lost.

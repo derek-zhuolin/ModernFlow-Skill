@@ -15,8 +15,8 @@ inline `--at` start time. That single number also drives the video tier, so the
 standalone HTML and the MP4 cannot drift apart.
 
 ```html
-<g class="dm dm-pop" style="--at:1.42s"> … </g>
-<path class="dm dm-draw dm-flow" style="--at:2.10s" pathLength="1" d="…"/>
+<g class="dm mf-pop" style="--at:1.42s"> … </g>
+<path class="dm mf-draw mf-flow" style="--at:2.10s" pathLength="1" d="…"/>
 ```
 
 `pathLength="1"` normalises dash units, so `stroke-dasharray: 1` means "one
@@ -75,19 +75,19 @@ Four entrances, one exit.
 
 | Class | Motion | Use for |
 | --- | --- | --- |
-| `dm-rise` | up from +20px | the headline of scene 1 |
-| `dm-settle` | down from -14px | eyebrows, and a headline arriving from above |
-| `dm-widen` | scale 0.94 → 1 | a headline that should feel like it expands into place |
-| `dm-slide` | in from +22px x | a headline following a leftward exit |
-| `dm-pop` | +14px, scale 0.985 | nodes and cards (smaller gesture than a title) |
-| `dm-out` | up and out, blurring | **everything**, everywhere |
+| `mf-rise` | up from +20px | the headline of scene 1 |
+| `mf-settle` | down from -14px | eyebrows, and a headline arriving from above |
+| `mf-widen` | scale 0.94 → 1 | a headline that should feel like it expands into place |
+| `mf-slide` | in from +22px x | a headline following a leftward exit |
+| `mf-pop` | +14px, scale 0.985 | nodes and cards (smaller gesture than a title) |
+| `mf-out` | up and out, blurring | **everything**, everywhere |
 
 **Vary entrances, fix exits.** Each scene's headline uses a *different*
 entrance from the last; every element in every scene leaves the same way. Entry
 is where you create interest, exit is where you create continuity.
 
-`dm-tip` for arrowheads — they land *after* their line arrives, never with it.
-`dm-flash` for a single emphasis pulse. Never loop it.
+`mf-tip` for arrowheads — they land *after* their line arrives, never with it.
+`mf-flash` for a single emphasis pulse. Never loop it.
 
 ---
 

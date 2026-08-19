@@ -1,6 +1,6 @@
 {
   "name": "still flowchart, no dependencies",
-  "skills": ["diagram-motion"],
+  "skills": ["modernflow"],
   "query": "Make me a diagram of our support triage: a ticket comes in, we check whether it's a known issue, if yes we send the canned reply and close it, if no it goes to an engineer, and either way it ends up in the weekly review. Landscape, and I want a PNG.",
   "files": [],
   "expected_behavior": [

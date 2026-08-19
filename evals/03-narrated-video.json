@@ -1,6 +1,6 @@
 {
   "name": "narrated vertical video from a comparison",
-  "skills": ["diagram-motion"],
+  "skills": ["modernflow"],
   "query": "Turn this into a 20-second vertical video with narration: the difference between giving an agent a goal and letting it iterate, versus drawing the whole path in advance and letting it only walk that path.",
   "files": [],
   "expected_behavior": [
