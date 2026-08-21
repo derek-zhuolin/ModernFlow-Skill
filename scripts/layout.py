@@ -418,20 +418,84 @@ def lay_grid(scene, nodes, box, opts):
     gx, gy = 16.0, 16.0
     cw = (box["w"] - gx * (cols - 1)) / cols
     ch = min(box["h"] / rows - gy, 128.0)
+    # Walk a cursor instead of divmod: a span-2 cell has to consume two columns.
+    # Indexing by position alone widens the cell and leaves the next one sitting
+    # on top of it — which still renders, and reads as a z-index bug rather than
+    # as the layout error it is.
+    placed = [x for x in nodes if "pos" not in x]
+    rows = 0
+    c = 0
+    for x in placed:
+        span = min(cols, int(x.get("span", 1)))
+        if c + span > cols:
+            rows += 1
+            c = 0
+        x["_cell"] = (rows, c, span)
+        c += span
+        if c >= cols:
+            rows += 1
+            c = 0
+    rows = max(1, rows + (1 if c else 0))
+    ch = min(box["h"] / rows - gy, 128.0)
     y = box["y"] + (box["h"] - (ch * rows + gy * (rows - 1))) / 2
-    for i, x in enumerate(nodes):
-        r, c = divmod(i, cols)
+    for x in nodes:
         if "pos" in x:                       # matrix / quadrant: position IS the claim
             px, py = x["pos"]
             x["w"], x["h"] = box_for(x, 15.0, pad_x=16.0, min_w=96.0)
             x["x"] = q(box["x"] + px * (box["w"] - x["w"]))
             x["y"] = q(box["y"] + (1 - py) * (box["h"] - x["h"]))
             continue
-        span = int(x.get("span", 1))
+        r, c, span = x["_cell"]
         x["w"] = q(cw * span + gx * (span - 1))
         x["h"] = q(ch)
         x["x"] = q(box["x"] + c * (cw + gx))
         x["y"] = q(y + r * (ch + gy))
+
+def convex_hull(pts):
+    """Andrew's monotone chain. A bounding box round each group would be easier
+    and would claim a rectangular region the data does not occupy — with two
+    groups near each other the boxes overlap where the points do not, and the
+    figure says they mix when they do not."""
+    pts = sorted(set(pts))
+    if len(pts) <= 2:
+        return pts
+    def cross(o, a, b):
+        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+    lower = []
+    for pt in pts:
+        while len(lower) >= 2 and cross(lower[-2], lower[-1], pt) <= 0:
+            lower.pop()
+        lower.append(pt)
+    upper = []
+    for pt in reversed(pts):
+        while len(upper) >= 2 and cross(upper[-2], upper[-1], pt) <= 0:
+            upper.pop()
+        upper.append(pt)
+    return lower[:-1] + upper[:-1]
+
+
+def rounded_poly(pts, r=22.0):
+    """A hull with hard corners reads as a container someone drew; rounded, it
+    reads as a region the points imply."""
+    k = len(pts)
+    if k < 3:
+        return ""
+    a, b = [], []
+    for i in range(k):
+        p0, p1, p2 = pts[i - 1], pts[i], pts[(i + 1) % k]
+        for src, dst in ((p0, a), (p2, b)):
+            vx, vy = src[0] - p1[0], src[1] - p1[1]
+            ln = math.hypot(vx, vy) or 1.0
+            d = min(r, ln / 2)
+            dst.append((p1[0] + vx / ln * d, p1[1] + vy / ln * d))
+    out = ["M %s %s" % (n(a[0][0]), n(a[0][1]))]
+    for i in range(k):
+        out.append("Q %s %s %s %s" % (n(pts[i][0]), n(pts[i][1]),
+                                      n(b[i][0]), n(b[i][1])))
+        j = (i + 1) % k
+        out.append("L %s %s" % (n(a[j][0]), n(a[j][1])))
+    return " ".join(out) + " Z"
+
 
 def lay_field(scene, nodes, box, opts):
     k = len(nodes)
@@ -449,6 +513,27 @@ def lay_field(scene, nodes, box, opts):
             px, py = 0.5 + 0.38 * math.cos(th), 0.5 - 0.38 * math.sin(th)
         x["x"] = q(box["x"] + px * box["w"] - x["w"] / 2)
         x["y"] = q(box["y"] + (1 - py) * box["h"] - x["h"] / 2)
+
+    # A cluster without hulls is a scatter plot with no axes: the grouping is
+    # the argument and the points are only the evidence, so leaving the hulls
+    # out deletes the claim and keeps the supporting material.
+    groups = {}
+    for x in nodes:
+        if x.get("group"):
+            groups.setdefault(x["group"], []).append(x)
+    if groups:
+        pad = 22.0
+        hulls = []
+        for name, members in groups.items():
+            pts = []
+            for m in members:
+                for cx0 in (m["x"] - pad, m["x"] + m["w"] + pad):
+                    for cy0 in (m["y"] - pad, m["y"] + m["h"] + pad):
+                        pts.append((cx0, cy0))
+            hull = convex_hull(pts)
+            hulls.append((name, rounded_poly(hull),
+                          min(pt[0] for pt in hull), min(pt[1] for pt in hull)))
+        scene["_hulls"] = hulls
 
 def lay_row(scene, nodes, box, opts):
     for x in nodes:
@@ -675,7 +760,30 @@ def lay_er(scene, nodes, box, opts):
         x["y"] = q(box["y"] + r * (box["h"] / rows) +
                    (box["h"] / rows - x["h"]) / 2)
 
+def lay_table(scene, nodes, box, opts):
+    """Rows and rules, not a grid of cards. A table drawn as cards is a bento:
+    equal boxes say the cells are peers, when the whole point of a table is that
+    a row is one thing and a column is one property of it."""
+    cols = max(len(x.get("cells", [])) for x in nodes)
+    widths = scene.get("colw") or [1.0] * cols
+    tot = sum(widths[:cols])
+    xs, acc = [], 0.0
+    for w in widths[:cols]:
+        xs.append(box["x"] + acc / tot * box["w"])
+        acc += w
+    rh = min(52.0, box["h"] / max(1, len(nodes)))
+    y = box["y"] + (box["h"] - rh * len(nodes)) / 2
+    for i, x in enumerate(nodes):
+        x["shape"] = "row"
+        x["_cells"] = list(x.get("cells", [x.get("label", "")]))
+        x["_colx"] = xs
+        x["_head"] = x.get("kind") == "header" or i == 0 and scene.get("header", True)
+        x["x"], x["y"] = q(box["x"]), q(y)
+        x["w"], x["h"] = q(box["w"]), q(rh)
+        y += rh
+
 SPECIAL = {
+    "table": lay_table, "spec-rows": lay_table,
     "timeline": lay_timeline, "sequence": lay_sequence, "swimlane": lay_swimlane,
     "gantt": lay_gantt, "radar": lay_radar, "treemap": lay_treemap,
     "mindmap": lay_mindmap, "er": lay_er,
@@ -921,6 +1029,18 @@ def shape_svg(x):
             out.append('<text class="mf-sub" x="%s" y="%s">%s</text>'
                        % (n(cx), n(x["y"] + 49), esc(x["sub"])))
         return "".join(out)
+    if s == "row":
+        cls = "mf-tag" if x.get("_head") else "mf-node"
+        out = []
+        for i, cell in enumerate(x["_cells"]):
+            if i >= len(x["_colx"]):
+                break
+            out.append('<text class="%s" x="%s" y="%s" text-anchor="start">%s</text>'
+                       % (cls, n(x["_colx"][i] + 2), n(cy + (5 if x.get("_head") else 6)),
+                          esc(cell)))
+        out.append('<line class="mf-rule" x1="%s" y1="%s" x2="%s" y2="%s" />'
+                   % (n(x["x"]), n(x["y"] + x["h"]), n(x["x"] + x["w"]), n(x["y"] + x["h"])))
+        return "".join(out)
     if s == "none":
         # A radar vertex has no card: a box at each point competes with the
         # polygon, and the polygon is the argument.
@@ -1069,6 +1189,14 @@ def extras_svg(scene, nodes, box, at0, ind):
             mx = x0 + (float(m["at"]) - lo) / max(1e-6, hi - lo) * (x1 - x0)
             draw("mf-dash", "M %s %s L %s %s" % (n(mx), n(ytop), n(mx), n(ybot)), 0.05 + i * 0.04)
             tag(m["label"], mx, ytop - 10, 0.08 + i * 0.04)
+
+    if scene.get("_hulls"):
+        for i, (name, d, hx, hy) in enumerate(scene["_hulls"]):
+            if not d:
+                continue
+            L.append('%s<path class="dm mf-ink mf-set" style="--at:%ss" d="%s" />'
+                     % (ind, n(t + 0.04 * i), d))
+            tag(name, hx + 14, hy + 20, 0.08 + 0.04 * i, "start")
 
     if scene.get("_radar"):
         cx, cy, r, pts, rim = scene["_radar"]

@@ -148,12 +148,15 @@ A scene:
 | `score` 0–1 | radar | the vertex's distance from the centre |
 | `value` | treemap | area is proportional to this |
 | `fields: [...]` | er | the entity's columns |
+| `cells: [...]` | table, spec-rows | one row's values, left to right |
+| `group` | cluster | which hull this point belongs inside |
 | `r` | venn | circle radius, if the default overlap is wrong |
 
 **scene extras**: `axes: {"x": [lo, hi], "y": [lo, hi]}` names the axes for
 quadrant, matrix and scatter — without them position is unreadable.
 `ticks: [{"at": 3, "label": "周四"}]` puts dated gridlines on a gantt.
-`cols` sets the grid width.
+`cols` sets the grid width; `colw: [1, 1.2, 1.4]` sets relative column widths
+for a table. A table's first row is its header unless `header: false`.
 
 **edge.kind** is `solid` (default), `accent`, `dashed`, or `spoke`. Dashed and
 spoke edges fade in rather than draw — the draw animation works by taking over

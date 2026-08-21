@@ -1336,64 +1336,97 @@
    "tag": "TABLE",
    "nodes": [
     {
-     "id": "a",
-     "label": "型号"
+     "id": "h",
+     "kind": "header",
+     "cells": [
+      "层",
+      "需要什么",
+      "产出"
+     ]
     },
     {
-     "id": "b",
-     "label": "指向性"
+     "id": "r1",
+     "cells": [
+      "still",
+      "浏览器",
+      ".html + .png"
+     ]
     },
     {
-     "id": "c",
-     "label": "价格"
+     "id": "r2",
+     "cells": [
+      "motion",
+      "浏览器",
+      "一个自播的 .html"
+     ]
     },
     {
-     "id": "d",
-     "label": "MV7"
-    },
-    {
-     "id": "e",
-     "label": "心形"
-    },
-    {
-     "id": "f",
-     "label": "¥1,799"
+     "id": "r3",
+     "cells": [
+      "video",
+      "HyperFrames",
+      ".mp4"
+     ]
     }
    ],
-   "accent": "f",
-   "cols": 3
+   "accent": "r2",
+   "cols": 3,
+   "colw": [
+    1.0,
+    1.2,
+    1.4
+   ]
   },
   {
    "id": "spec-rows",
    "type": "spec-rows",
    "eyebrow": "GRID · 29",
-   "title": "关于这支片子本身的事实",
+   "title": "关于这一套图本身的事实",
    "num": "29",
    "tag": "SPEC ROWS",
    "nodes": [
     {
+     "id": "h",
+     "kind": "header",
+     "cells": [
+      "字段",
+      "值"
+     ]
+    },
+    {
      "id": "a",
-     "label": "时长",
-     "sub": "3:12"
+     "cells": [
+      "类型",
+      "41 种 · 7 个几何族"
+     ]
     },
     {
      "id": "b",
-     "label": "画幅",
-     "sub": "1080×1920"
+     "cells": [
+      "画幅",
+      "1920 × 1080"
+     ]
     },
     {
      "id": "c",
-     "label": "帧率",
-     "sub": "30fps"
+     "cells": [
+      "语速",
+      "rate 1.3"
+     ]
     },
     {
      "id": "d",
-     "label": "码率",
-     "sub": "12 Mbps"
+     "cells": [
+      "字体包",
+      "16 个字面 · 457 个汉字"
+     ]
     }
    ],
-   "accent": "a",
-   "cols": 2
+   "accent": "d",
+   "colw": [
+    1.0,
+    1.6
+   ]
   },
   {
    "id": "swimlane",
@@ -1674,41 +1707,46 @@
     {
      "id": "a",
      "label": "健身",
+     "group": "身体",
      "pos": [
-      0.24,
-      0.72
+      0.2,
+      0.7
      ]
     },
     {
      "id": "b",
      "label": "睡眠",
+     "group": "身体",
      "pos": [
-      0.34,
-      0.55
+      0.32,
+      0.44
      ]
     },
     {
      "id": "c",
      "label": "读书",
+     "group": "产出",
      "pos": [
-      0.68,
+      0.66,
       0.74
      ]
     },
     {
      "id": "d",
      "label": "写作",
+     "group": "产出",
      "pos": [
-      0.78,
-      0.56
+      0.8,
+      0.5
      ]
     },
     {
      "id": "e",
      "label": "记账",
+     "group": "钱",
      "pos": [
-      0.52,
-      0.24
+      0.48,
+      0.16
      ]
     }
    ],

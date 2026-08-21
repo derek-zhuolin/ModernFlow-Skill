@@ -43,9 +43,9 @@ a new page of coordinate maths.
 Set the type; the family follows. `layout.py` refuses an unknown type rather
 than guessing, because a wrong family is a wrong argument, not a wrong style.
 
-**Eight types are a lie when drawn with their family's generic geometry**, and
+**Ten types are a lie when drawn with their family's generic geometry**, and
 carry their own solver: `timeline`, `sequence`, `swimlane`, `gantt`, `radar`,
-`treemap`, `mindmap`, `er`. A gantt whose bars are all one column length, a
+`treemap`, `mindmap`, `er`, `table`, `spec-rows`. A gantt whose bars are all one column length, a
 radar with no polygon, a treemap whose tiles are equal — each renders, and each
 says something false about the subject. That is the test for whether a type
 needs its own geometry: not "does it look different" but "would the family
@@ -344,7 +344,7 @@ worse than no spec row.
 | --- | --- |
 | **quadrant** | A matrix with the two axes named at both ends and the winning quadrant tinted. Only one quadrant may be tinted. |
 | **bento** | Uneven cells via `span`. Reserve the big cell for the thing that deserves it; a bento where every cell is the same size is a table. |
-| **table** | Header row in `mf-tag`, body rows in `mf-node`. Rules between rows, never a border box around everything. |
+| **table** | Rows and rules, never a grid of cards — equal boxes say the cells are peers, when the point of a table is that a row is one thing and a column is one property of it. Header in `mf-tag`, body in `mf-node`. |
 | **swimlane** | Rows are owners, columns are stages, and a cell holds the step that owner performs then. The lane label is a left rail, not a cell. |
 | **gantt** | Bar `x` and width come from real dates. Overlap is the whole point, so never round bars to whole columns — that is where the schedule conflict disappears. |
 | **er** | Entities as boxes with their fields listed; the edge carries the cardinality (`1—n`) as its label. An unlabelled ER edge is as broken as an unlabelled branch. |
