@@ -1,0 +1,58 @@
+# The claim this repo makes is "a fresh clone renders the same picture on any
+# machine". That is exactly what a CI run is, so run it as one: check out
+# nothing but the repo, install nothing, and put the gates through it.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  gates:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # The oldest Python the scripts support and a current one, on both a
+        # Linux and a macOS runner — the four corners of "someone else's laptop".
+        os: [ubuntu-latest, macos-latest]
+        python: ["3.9", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: doctor
+        run: python3 scripts/doctor.py
+
+      - name: solve the shipped gallery
+        run: python3 scripts/layout.py docs/gallery.json -o /tmp/gallery.html
+
+      - name: gate — glyph coverage
+        run: python3 scripts/check_fonts.py /tmp/gallery.html
+
+      - name: gate — contrast, both profiles
+        run: |
+          python3 scripts/build.py /tmp/gallery.html -o /tmp/gallery.built.html
+          python3 scripts/check_contrast.py /tmp/gallery.built.html
+          python3 - <<'PY'
+          import json, pathlib
+          d = json.loads(pathlib.Path("docs/gallery.json").read_text())
+          d["profile"] = "editorial-paper"
+          pathlib.Path("/tmp/ed.json").write_text(json.dumps(d, ensure_ascii=False))
+          PY
+          python3 scripts/layout.py /tmp/ed.json -o /tmp/ed.html
+          python3 scripts/build.py /tmp/ed.html -o /tmp/ed.built.html
+          python3 scripts/check_contrast.py /tmp/ed.built.html
+
+      - name: gate — the same spec must solve to the same bytes
+        run: |
+          python3 scripts/layout.py docs/gallery.json -o /tmp/a.html
+          python3 scripts/layout.py docs/gallery.json -o /tmp/b.html
+          cmp /tmp/a.html /tmp/b.html
+
+      - name: build the playground offline
+        run: python3 scripts/playground.py docs/gallery.json -o /tmp/index.html --offline

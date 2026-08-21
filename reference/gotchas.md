@@ -17,6 +17,11 @@ it presents, why it happens, and the fix.
 9. A vertical layout leaves the bottom third empty
 10. A gate passes with nothing to check
 11. Placeholder numbers survive to the render
+12. Arrowheads jump to the top-left corner when their animation ends
+13. A dashed edge draws itself solid
+14. The accent ring is on screen from the first frame
+15. A screenshot at four seconds is not second four
+16. The contrast gate reports the wrong profile
 
 ---
 
@@ -190,3 +195,110 @@ revisited.
 probe the file, measure the render. If a spec row's value cannot be read from
 something real, delete the row. This is the one gotcha with no technical cause
 and the highest cost.
+
+---
+
+## 12 · Arrowheads jump to the top-left corner when their animation ends
+
+**Presents as:** arrowheads visible while the figure builds, then gone. Or a
+cluster of small triangles piled at (0, 0) that reads as a rendering artefact.
+
+**Why:** `mf-tip` ends at `transform: none`, and a CSS `transform` overrides an
+SVG `transform` **attribute**. An arrowhead carrying its own
+`transform="translate(…) rotate(…)"` keeps that placement only while the
+animation is mid-flight and interpolating; the moment the animation settles on
+`none`, the placement is thrown away and the element snaps to the origin.
+
+It survives review because the build looks right — the failure is in the
+resting frame, which is the frame nobody scrubs to.
+
+**Fix:** placement on a wrapper, animation on the shape.
+
+```html
+<g transform="translate(490,300)">
+  <polygon class="dm mf-tip mf-head" style="--at:2.36s" points="0,0 -11,-5.2 -11,5.2" />
+</g>
+```
+
+The same trap applies to anything animated that also carries a `transform`
+attribute. `scripts/layout.py` emits the wrapper; hand-authored figures have to
+remember.
+
+---
+
+## 13 · A dashed edge draws itself solid
+
+**Presents as:** a spoke or a dashed link that should be dashed and is not.
+
+**Why:** the draw animation works by setting `stroke-dasharray: 1` on a path
+with `pathLength="1"`, so one dash unit is one whole path. `mf-dash` sets
+`stroke-dasharray: 5 5`. They are the same property; whichever rule wins erases
+the other, and neither is an error.
+
+**Fix:** dashed lines fade in with `mf-ink` instead of drawing with `mf-draw`.
+Drop `pathLength` while you are there — nothing reads it any more.
+
+---
+
+## 14 · The accent ring is on screen from the first frame
+
+**Presents as:** the hand-drawn ring around the accent node visible before its
+node exists, hanging in empty space.
+
+**Why:** `.dm` sets `animation-fill-mode: both`, which applies the `from` state
+during the delay. `mf-flash` used to start at `opacity: 1`, so "before its
+beat" and "at full opacity" were the same thing.
+
+**Fix:** the keyframe now starts at 0 and reaches 1 at 18%, so the flash is an
+entrance and a pulse in one. Any keyframe that is going to be delayed has to
+start from a state that is correct to display for the whole delay.
+
+---
+
+## 15 · A screenshot at four seconds is not second four
+
+**Presents as:** two machines produce different stills from the same page. Or
+the still comes out mid-camera-move, zoomed into a node with the rest of the
+figure out of frame.
+
+**Why:** `--virtual-time-budget` is a budget, not a seek, and different Chrome
+builds — full Chrome versus `chrome-headless-shell` — advance it differently.
+`build.py` picks whichever Chrome it finds, so the same command on two machines
+can land on two different frames.
+
+**Fix:** the page seeks itself. `?t=4.4` pauses every animation and sets its
+`currentTime`, which is exact everywhere. `build.py --png --at 4.4` passes it.
+
+Then pick the number rather than defaulting it: `layout.py` prints the resting
+moment of each scene, which is after the camera has pulled back and before the
+seam fires. During a seam both scenes are on screen — correct in motion, and
+useless as a still.
+
+---
+
+## 16 · The contrast gate reports the wrong profile
+
+**Presents as:** an `editorial-paper` page gated, and passed, against the
+`soft-gradient` palette. Nothing fails, so nothing draws attention.
+
+**Why:** the gate found the profile by searching the whole document for
+`data-profile="…"`. The stylesheet defines its tokens as
+`[data-profile="soft-gradient"] { … }` rules, and those come before the element
+that actually sets the attribute, so the search always answered with whichever
+profile `base.css` happens to define first.
+
+**Fix:** strip `<style>` blocks before looking for the attribute. Worth
+remembering as a shape: a page that contains its own configuration language
+will answer questions about itself with its documentation.
+
+There is a related case in the same file. A text role that only ever sits on a
+known fill — the label on the dark hub — cannot be checked against the paper,
+where it measures 1.00:1 and is never drawn. Such a role declares where it
+lives, and the gate honours it:
+
+```css
+.mf-node-inv { /* @on: ink */ fill: var(--paper); … }
+```
+
+That annotation is a claim you have to be right about. Use it only where the
+page really does guarantee the background.

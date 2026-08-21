@@ -156,3 +156,35 @@ ffmpeg -hide_banner -i renders/out.mp4 -af ebur128=peak=true -f null -   # true 
 Then pull two or three frames out of the **rendered file** — not the preview —
 and look at them. Seams and mid-animation states are where problems hide, and
 they are invisible in a still preview.
+
+---
+
+## Camera moves and rate in the video tier
+
+The standalone page expresses a camera move as a `mf-push` / `mf-pull` pair of
+CSS animations. GSAP has no equivalent trick and does not need one — it has a
+timeline, so the dwell is just a gap:
+
+```js
+const cam = { zx: 678, zy: 315, k: 1.7 };
+tl.to("#cam", { x: cx - cam.zx, y: cy - cam.zy, scale: cam.k,
+                transformOrigin: `${cam.zx}px ${cam.zy}px`,
+                duration: 0.62, ease: "power4.inOut" }, 3.2)
+  .to("#cam", { x: 0, y: 0, scale: 1, duration: 0.62, ease: "power4.inOut" }, 5.4);
+```
+
+Two things to carry over rather than re-derive:
+
+- **The origin must match the push.** GSAP's `transformOrigin` is per-tween; set
+  it on both, or the pull returns to a different centre than the push left.
+- **Named eases only.** The GSAP core does not parse `cubic-bezier()` strings
+  and falls back to linear without saying so. `base.css` bakes the curves in as
+  cubic-beziers for the CSS tier; the video tier uses the names.
+
+`rate` is not a playback-speed setting. Render at 1× and let `layout.py` bake
+the compression into the beats — speeding up the finished MP4 speeds the
+narration and the picture together, which is the opposite of the point, and
+takes every element duration below its floor on the way.
+
+`layout.py --split` writes one page per scene, which is the shape the video
+tier wants: one clip per scene, each starting at its own zero.

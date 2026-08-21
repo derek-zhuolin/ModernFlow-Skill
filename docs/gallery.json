@@ -1,0 +1,1933 @@
+{
+ "title": "ModernFlow — 41 个类型",
+ "canvas": "landscape",
+ "profile": "soft-gradient",
+ "rate": 1.3,
+ "seed": "gallery-2026-08",
+ "scenes": [
+  {
+   "id": "flow",
+   "type": "flow",
+   "eyebrow": "CHAIN · 01",
+   "title": "投稿从进来到发出去",
+   "num": "01",
+   "tag": "FLOW",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "收到投稿",
+     "sub": "inbox",
+     "kind": "start"
+    },
+    {
+     "id": "b",
+     "label": "查重过了吗？",
+     "sub": "decide",
+     "kind": "decision"
+    },
+    {
+     "id": "x",
+     "label": "退回作者",
+     "sub": "附相似段落",
+     "kind": "exit",
+     "lane": -1,
+     "from": "b"
+    },
+    {
+     "id": "c",
+     "label": "编辑初审",
+     "sub": "48 小时内"
+    },
+    {
+     "id": "d",
+     "label": "排期发布",
+     "sub": "published"
+    }
+   ],
+   "edges": [
+    {
+     "from": "a",
+     "to": "b"
+    },
+    {
+     "from": "b",
+     "to": "x",
+     "label": "否"
+    },
+    {
+     "from": "b",
+     "to": "c",
+     "label": "是"
+    },
+    {
+     "from": "c",
+     "to": "d",
+     "kind": "accent"
+    }
+   ],
+   "accent": "d",
+   "watermark": "FLOW",
+   "brand": "编辑部手册",
+   "tagline": "投稿流程 v3"
+  },
+  {
+   "id": "steps",
+   "type": "steps",
+   "eyebrow": "CHAIN · 02",
+   "title": "手冲的五步，没有分支",
+   "num": "02",
+   "tag": "STEPS",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "磨豆",
+     "sub": "中细 · 20g"
+    },
+    {
+     "id": "b",
+     "label": "闷蒸",
+     "sub": "40g · 30s"
+    },
+    {
+     "id": "c",
+     "label": "三段注水",
+     "sub": "至 320g"
+    },
+    {
+     "id": "d",
+     "label": "落杯",
+     "sub": "2:30"
+    },
+    {
+     "id": "e",
+     "label": "品鉴",
+     "sub": "记风味"
+    }
+   ],
+   "edges": [
+    {
+     "from": "a",
+     "to": "b"
+    },
+    {
+     "from": "b",
+     "to": "c"
+    },
+    {
+     "from": "c",
+     "to": "d"
+    },
+    {
+     "from": "d",
+     "to": "e",
+     "kind": "accent"
+    }
+   ],
+   "accent": "e"
+  },
+  {
+   "id": "pipeline",
+   "type": "pipeline",
+   "eyebrow": "CHAIN · 03",
+   "title": "边上写的是传下去的东西",
+   "num": "03",
+   "tag": "PIPELINE",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "录音"
+    },
+    {
+     "id": "b",
+     "label": "降噪"
+    },
+    {
+     "id": "c",
+     "label": "剪辑"
+    },
+    {
+     "id": "d",
+     "label": "混音"
+    },
+    {
+     "id": "e",
+     "label": "分发"
+    }
+   ],
+   "edges": [
+    {
+     "from": "a",
+     "to": "b",
+     "label": "WAV 48k"
+    },
+    {
+     "from": "b",
+     "to": "c",
+     "label": "单轨"
+    },
+    {
+     "from": "c",
+     "to": "d",
+     "label": "章节点"
+    },
+    {
+     "from": "d",
+     "to": "e",
+     "label": "-16 LUFS",
+     "kind": "accent"
+    }
+   ],
+   "accent": "e",
+   "brand": "播客制作",
+   "tagline": "每条边都有货"
+  },
+  {
+   "id": "sequence",
+   "type": "sequence",
+   "eyebrow": "CHAIN · 04",
+   "title": "扫码点单，谁先跟谁说话",
+   "num": "04",
+   "tag": "SEQUENCE",
+   "nodes": [
+    {
+     "id": "u",
+     "label": "顾客"
+    },
+    {
+     "id": "m",
+     "label": "小程序"
+    },
+    {
+     "id": "k",
+     "label": "后厨屏"
+    },
+    {
+     "id": "p",
+     "label": "收银"
+    }
+   ],
+   "edges": [
+    {
+     "from": "u",
+     "to": "m",
+     "label": "扫码"
+    },
+    {
+     "from": "m",
+     "to": "p",
+     "label": "锁定金额"
+    },
+    {
+     "from": "p",
+     "to": "m",
+     "label": "支付成功",
+     "kind": "dashed"
+    },
+    {
+     "from": "m",
+     "to": "k",
+     "label": "下单",
+     "kind": "accent"
+    },
+    {
+     "from": "k",
+     "to": "u",
+     "label": "取餐号",
+     "kind": "dashed"
+    }
+   ],
+   "accent": "m"
+  },
+  {
+   "id": "timeline",
+   "type": "timeline",
+   "eyebrow": "CHAIN · 05",
+   "title": "一支片子的十天",
+   "num": "05",
+   "tag": "TIMELINE",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "选题",
+     "sub": "D0"
+    },
+    {
+     "id": "b",
+     "label": "脚本",
+     "sub": "D2"
+    },
+    {
+     "id": "c",
+     "label": "拍摄",
+     "sub": "D4"
+    },
+    {
+     "id": "d",
+     "label": "粗剪",
+     "sub": "D6"
+    },
+    {
+     "id": "e",
+     "label": "上线",
+     "sub": "D9"
+    }
+   ],
+   "accent": "e"
+  },
+  {
+   "id": "journey",
+   "type": "journey",
+   "eyebrow": "CHAIN · 06",
+   "title": "租房这件事的情绪曲线",
+   "num": "06",
+   "tag": "JOURNEY",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "看房",
+     "sub": "兴奋"
+    },
+    {
+     "id": "b",
+     "label": "签约",
+     "sub": "紧张"
+    },
+    {
+     "id": "c",
+     "label": "搬家",
+     "sub": "崩溃"
+    },
+    {
+     "id": "d",
+     "label": "第一周",
+     "sub": "将就"
+    },
+    {
+     "id": "e",
+     "label": "一个月后",
+     "sub": "是我家了"
+    }
+   ],
+   "edges": [
+    {
+     "from": "a",
+     "to": "b"
+    },
+    {
+     "from": "b",
+     "to": "c"
+    },
+    {
+     "from": "c",
+     "to": "d"
+    },
+    {
+     "from": "d",
+     "to": "e",
+     "kind": "accent"
+    }
+   ],
+   "accent": "e"
+  },
+  {
+   "id": "state-machine",
+   "type": "state-machine",
+   "eyebrow": "CHAIN · 07",
+   "title": "订单能待在哪几种状态",
+   "num": "07",
+   "tag": "STATE MACHINE",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "待支付",
+     "kind": "start"
+    },
+    {
+     "id": "b",
+     "label": "已支付",
+     "kind": "store"
+    },
+    {
+     "id": "c",
+     "label": "备货中"
+    },
+    {
+     "id": "d",
+     "label": "已发货"
+    },
+    {
+     "id": "e",
+     "label": "已完成",
+     "kind": "end"
+    }
+   ],
+   "edges": [
+    {
+     "from": "a",
+     "to": "b",
+     "label": "付款"
+    },
+    {
+     "from": "b",
+     "to": "c",
+     "label": "仓库接单"
+    },
+    {
+     "from": "c",
+     "to": "d",
+     "label": "出库"
+    },
+    {
+     "from": "d",
+     "to": "e",
+     "label": "签收",
+     "kind": "accent"
+    }
+   ],
+   "accent": "e"
+  },
+  {
+   "id": "data-flow",
+   "type": "data-flow",
+   "eyebrow": "CHAIN · 08",
+   "title": "手环上的数据去了哪里",
+   "num": "08",
+   "tag": "DATA FLOW",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "手环",
+     "sub": "raw",
+     "kind": "store"
+    },
+    {
+     "id": "b",
+     "label": "同步进程"
+    },
+    {
+     "id": "c",
+     "label": "训练库",
+     "sub": "store",
+     "kind": "store"
+    },
+    {
+     "id": "d",
+     "label": "周报生成"
+    },
+    {
+     "id": "e",
+     "label": "推送",
+     "kind": "end"
+    }
+   ],
+   "edges": [
+    {
+     "from": "a",
+     "to": "b"
+    },
+    {
+     "from": "b",
+     "to": "c"
+    },
+    {
+     "from": "c",
+     "to": "d"
+    },
+    {
+     "from": "d",
+     "to": "e",
+     "kind": "accent"
+    }
+   ],
+   "accent": "e"
+  },
+  {
+   "id": "loop",
+   "type": "loop",
+   "eyebrow": "RADIAL · 09",
+   "title": "飞轮转起来靠中间那个库",
+   "num": "09",
+   "tag": "LOOP",
+   "nodes": [
+    {
+     "id": "h",
+     "label": "选题库",
+     "sub": "the state",
+     "kind": "hub"
+    },
+    {
+     "id": "p",
+     "label": "发一条"
+    },
+    {
+     "id": "q",
+     "label": "看数据"
+    },
+    {
+     "id": "r",
+     "label": "问读者"
+    },
+    {
+     "id": "s",
+     "label": "补选题"
+    }
+   ],
+   "edges": [
+    {
+     "from": "p",
+     "to": "q"
+    },
+    {
+     "from": "q",
+     "to": "r"
+    },
+    {
+     "from": "r",
+     "to": "s"
+    },
+    {
+     "from": "s",
+     "to": "p",
+     "kind": "accent"
+    },
+    {
+     "from": "q",
+     "to": "h",
+     "kind": "spoke"
+    },
+    {
+     "from": "s",
+     "to": "h",
+     "kind": "spoke"
+    }
+   ],
+   "accent": "s",
+   "brand": "内容飞轮",
+   "tagline": "没有中枢就只是个圆"
+  },
+  {
+   "id": "cycle",
+   "type": "cycle",
+   "eyebrow": "RADIAL · 10",
+   "title": "一夜要走四五轮",
+   "num": "10",
+   "tag": "CYCLE",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "N1",
+     "sub": "入睡"
+    },
+    {
+     "id": "b",
+     "label": "N2",
+     "sub": "浅睡"
+    },
+    {
+     "id": "c",
+     "label": "N3",
+     "sub": "深睡"
+    },
+    {
+     "id": "d",
+     "label": "REM",
+     "sub": "做梦"
+    }
+   ],
+   "edges": [
+    {
+     "from": "a",
+     "to": "b"
+    },
+    {
+     "from": "b",
+     "to": "c"
+    },
+    {
+     "from": "c",
+     "to": "d"
+    },
+    {
+     "from": "d",
+     "to": "a",
+     "kind": "accent"
+    }
+   ],
+   "accent": "d"
+  },
+  {
+   "id": "wheel",
+   "type": "wheel",
+   "eyebrow": "RADIAL · 11",
+   "title": "一个人要转的六件事",
+   "num": "11",
+   "tag": "WHEEL",
+   "nodes": [
+    {
+     "id": "h",
+     "label": "时间",
+     "sub": "唯一的库存",
+     "kind": "hub"
+    },
+    {
+     "id": "a",
+     "label": "选题"
+    },
+    {
+     "id": "b",
+     "label": "生产"
+    },
+    {
+     "id": "c",
+     "label": "分发"
+    },
+    {
+     "id": "d",
+     "label": "变现"
+    },
+    {
+     "id": "e",
+     "label": "复盘"
+    }
+   ],
+   "edges": [
+    {
+     "from": "a",
+     "to": "h",
+     "kind": "spoke"
+    },
+    {
+     "from": "b",
+     "to": "h",
+     "kind": "spoke"
+    },
+    {
+     "from": "c",
+     "to": "h",
+     "kind": "spoke"
+    },
+    {
+     "from": "d",
+     "to": "h",
+     "kind": "spoke"
+    },
+    {
+     "from": "e",
+     "to": "h",
+     "kind": "spoke"
+    }
+   ],
+   "accent": "h"
+  },
+  {
+   "id": "orbit",
+   "type": "orbit",
+   "eyebrow": "RADIAL · 12",
+   "title": "近的先做，远的先想",
+   "num": "12",
+   "tag": "ORBIT",
+   "nodes": [
+    {
+     "id": "h",
+     "label": "本季目标",
+     "kind": "hub"
+    },
+    {
+     "id": "a",
+     "label": "改主页"
+    },
+    {
+     "id": "b",
+     "label": "接三个客户"
+    },
+    {
+     "id": "c",
+     "label": "写课"
+    },
+    {
+     "id": "d",
+     "label": "开源工具"
+    }
+   ],
+   "edges": [
+    {
+     "from": "a",
+     "to": "h",
+     "kind": "spoke"
+    },
+    {
+     "from": "b",
+     "to": "h",
+     "kind": "spoke"
+    },
+    {
+     "from": "c",
+     "to": "h",
+     "kind": "spoke"
+    },
+    {
+     "from": "d",
+     "to": "h",
+     "kind": "spoke"
+    }
+   ],
+   "accent": "b"
+  },
+  {
+   "id": "radar",
+   "type": "radar",
+   "eyebrow": "RADIAL · 13",
+   "title": "一只 35mm 定焦的五个面",
+   "num": "13",
+   "tag": "RADAR",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "锐度",
+     "score": 0.86
+    },
+    {
+     "id": "b",
+     "label": "体积",
+     "score": 0.72
+    },
+    {
+     "id": "c",
+     "label": "对焦",
+     "score": 0.55
+    },
+    {
+     "id": "d",
+     "label": "价格",
+     "score": 0.4
+    },
+    {
+     "id": "e",
+     "label": "焦外",
+     "score": 0.78
+    }
+   ]
+  },
+  {
+   "id": "layers",
+   "type": "layers",
+   "eyebrow": "STACK · 14",
+   "title": "一份提案，从上往下读",
+   "num": "14",
+   "tag": "LAYERS",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "结论",
+     "sub": "一句话"
+    },
+    {
+     "id": "b",
+     "label": "依据",
+     "sub": "三条"
+    },
+    {
+     "id": "c",
+     "label": "方法",
+     "sub": "怎么算的"
+    },
+    {
+     "id": "d",
+     "label": "原始数据",
+     "sub": "附件"
+    }
+   ],
+   "accent": "a"
+  },
+  {
+   "id": "pyramid",
+   "type": "pyramid",
+   "eyebrow": "STACK · 15",
+   "title": "越往上越少，也越贵",
+   "num": "15",
+   "tag": "PYRAMID",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "季度大稿",
+     "sub": "1 篇"
+    },
+    {
+     "id": "b",
+     "label": "周更长文",
+     "sub": "12 篇"
+    },
+    {
+     "id": "c",
+     "label": "日更短帖",
+     "sub": "90 条"
+    }
+   ],
+   "accent": "a"
+  },
+  {
+   "id": "funnel",
+   "type": "funnel",
+   "eyebrow": "STACK · 16",
+   "title": "一场直播，宽度就是人数",
+   "num": "16",
+   "tag": "FUNNEL",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "曝光",
+     "sub": "12,400"
+    },
+    {
+     "id": "b",
+     "label": "进直播间",
+     "sub": "1,860"
+    },
+    {
+     "id": "c",
+     "label": "停留 >1 分钟",
+     "sub": "520"
+    },
+    {
+     "id": "d",
+     "label": "下单",
+     "sub": "47"
+    }
+   ],
+   "accent": "d",
+   "brand": "2025 春季场",
+   "tagline": "转化率 0.38%"
+  },
+  {
+   "id": "medallion",
+   "type": "medallion",
+   "eyebrow": "STACK · 17",
+   "title": "三档会员，只有顶上那档是重点",
+   "num": "17",
+   "tag": "MEDALLION",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "青铜",
+     "sub": "免费"
+    },
+    {
+     "id": "b",
+     "label": "白银",
+     "sub": "¥29/月"
+    },
+    {
+     "id": "c",
+     "label": "黄金",
+     "sub": "¥99/月"
+    }
+   ],
+   "accent": "c"
+  },
+  {
+   "id": "tree",
+   "type": "tree",
+   "eyebrow": "TREE · 18",
+   "title": "菜单是棵树，不是一条流程",
+   "num": "18",
+   "tag": "TREE",
+   "nodes": [
+    {
+     "id": "r",
+     "label": "全部菜品"
+    },
+    {
+     "id": "a",
+     "label": "热菜"
+    },
+    {
+     "id": "b",
+     "label": "凉菜"
+    },
+    {
+     "id": "c",
+     "label": "小炒"
+    },
+    {
+     "id": "d",
+     "label": "汤"
+    },
+    {
+     "id": "e",
+     "label": "拍黄瓜"
+    }
+   ],
+   "edges": [
+    {
+     "from": "r",
+     "to": "a"
+    },
+    {
+     "from": "r",
+     "to": "b"
+    },
+    {
+     "from": "a",
+     "to": "c"
+    },
+    {
+     "from": "a",
+     "to": "d"
+    },
+    {
+     "from": "b",
+     "to": "e"
+    }
+   ],
+   "accent": "c"
+  },
+  {
+   "id": "org",
+   "type": "org",
+   "eyebrow": "TREE · 19",
+   "title": "八个人怎么挂",
+   "num": "19",
+   "tag": "ORG",
+   "nodes": [
+    {
+     "id": "r",
+     "label": "主编"
+    },
+    {
+     "id": "a",
+     "label": "选题组"
+    },
+    {
+     "id": "b",
+     "label": "制作组"
+    },
+    {
+     "id": "c",
+     "label": "调研 ×2"
+    },
+    {
+     "id": "d",
+     "label": "编导 ×2"
+    },
+    {
+     "id": "e",
+     "label": "剪辑 ×2"
+    }
+   ],
+   "edges": [
+    {
+     "from": "r",
+     "to": "a"
+    },
+    {
+     "from": "r",
+     "to": "b"
+    },
+    {
+     "from": "a",
+     "to": "c"
+    },
+    {
+     "from": "b",
+     "to": "d"
+    },
+    {
+     "from": "b",
+     "to": "e"
+    }
+   ],
+   "accent": "b"
+  },
+  {
+   "id": "breakdown",
+   "type": "breakdown",
+   "eyebrow": "TREE · 20",
+   "title": "三分钟的片子花在哪，加得上",
+   "num": "20",
+   "tag": "BREAKDOWN",
+   "nodes": [
+    {
+     "id": "r",
+     "label": "单条成本",
+     "sub": "¥8,400"
+    },
+    {
+     "id": "a",
+     "label": "前期",
+     "sub": "¥2,600"
+    },
+    {
+     "id": "b",
+     "label": "拍摄",
+     "sub": "¥3,800"
+    },
+    {
+     "id": "c",
+     "label": "后期",
+     "sub": "¥2,000"
+    },
+    {
+     "id": "d",
+     "label": "场地",
+     "sub": "¥1,800"
+    },
+    {
+     "id": "e",
+     "label": "器材",
+     "sub": "¥2,000"
+    }
+   ],
+   "edges": [
+    {
+     "from": "r",
+     "to": "a"
+    },
+    {
+     "from": "r",
+     "to": "b"
+    },
+    {
+     "from": "r",
+     "to": "c"
+    },
+    {
+     "from": "b",
+     "to": "d"
+    },
+    {
+     "from": "b",
+     "to": "e"
+    }
+   ],
+   "accent": "b"
+  },
+  {
+   "id": "mindmap",
+   "type": "mindmap",
+   "eyebrow": "TREE · 21",
+   "title": "发散的时候没有方向",
+   "num": "21",
+   "tag": "MINDMAP",
+   "nodes": [
+    {
+     "id": "r",
+     "label": "搬家"
+    },
+    {
+     "id": "a",
+     "label": "扔东西"
+    },
+    {
+     "id": "b",
+     "label": "找车"
+    },
+    {
+     "id": "c",
+     "label": "改地址"
+    },
+    {
+     "id": "d",
+     "label": "旧书"
+    },
+    {
+     "id": "e",
+     "label": "水电燃气"
+    }
+   ],
+   "edges": [
+    {
+     "from": "r",
+     "to": "a"
+    },
+    {
+     "from": "r",
+     "to": "b"
+    },
+    {
+     "from": "r",
+     "to": "c"
+    },
+    {
+     "from": "a",
+     "to": "d"
+    },
+    {
+     "from": "c",
+     "to": "e"
+    }
+   ],
+   "accent": "a"
+  },
+  {
+   "id": "taxonomy",
+   "type": "taxonomy",
+   "eyebrow": "TREE · 22",
+   "title": "层级是种类，不是步骤",
+   "num": "22",
+   "tag": "TAXONOMY",
+   "nodes": [
+    {
+     "id": "r",
+     "label": "处理法"
+    },
+    {
+     "id": "a",
+     "label": "日晒"
+    },
+    {
+     "id": "b",
+     "label": "水洗"
+    },
+    {
+     "id": "c",
+     "label": "厌氧"
+    },
+    {
+     "id": "d",
+     "label": "红酒处理"
+    }
+   ],
+   "edges": [
+    {
+     "from": "r",
+     "to": "a"
+    },
+    {
+     "from": "r",
+     "to": "b"
+    },
+    {
+     "from": "r",
+     "to": "c"
+    },
+    {
+     "from": "c",
+     "to": "d"
+    }
+   ],
+   "accent": "c"
+  },
+  {
+   "id": "decision-tree",
+   "type": "decision-tree",
+   "eyebrow": "TREE · 23",
+   "title": "每个岔口都得写清条件",
+   "num": "23",
+   "tag": "DECISION TREE",
+   "nodes": [
+    {
+     "id": "r",
+     "label": "要接这个活吗？",
+     "kind": "decision"
+    },
+    {
+     "id": "a",
+     "label": "预算够吗？",
+     "kind": "decision"
+    },
+    {
+     "id": "b",
+     "label": "婉拒",
+     "kind": "exit"
+    },
+    {
+     "id": "c",
+     "label": "接",
+     "kind": "end"
+    },
+    {
+     "id": "d",
+     "label": "报高一档",
+     "kind": "end"
+    }
+   ],
+   "edges": [
+    {
+     "from": "r",
+     "to": "a",
+     "label": "有兴趣"
+    },
+    {
+     "from": "r",
+     "to": "b",
+     "label": "没兴趣"
+    },
+    {
+     "from": "a",
+     "to": "c",
+     "label": "够"
+    },
+    {
+     "from": "a",
+     "to": "d",
+     "label": "不够"
+    }
+   ],
+   "accent": "c"
+  },
+  {
+   "id": "matrix",
+   "type": "matrix",
+   "eyebrow": "GRID · 24",
+   "title": "两个轴决定它落在哪",
+   "num": "24",
+   "tag": "MATRIX",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "自己剪",
+     "sub": "慢 · 可控",
+     "pos": [
+      0.18,
+      0.72
+     ]
+    },
+    {
+     "id": "b",
+     "label": "外包剪",
+     "sub": "快 · 失控",
+     "pos": [
+      0.8,
+      0.26
+     ]
+    },
+    {
+     "id": "c",
+     "label": "模板 + 自己调",
+     "sub": "快 · 可控",
+     "pos": [
+      0.78,
+      0.8
+     ]
+    }
+   ],
+   "accent": "c",
+   "axes": {
+    "x": [
+     "出片慢",
+     "出片快"
+    ],
+    "y": [
+     "风格失控",
+     "风格可控"
+    ]
+   }
+  },
+  {
+   "id": "quadrant",
+   "type": "quadrant",
+   "eyebrow": "GRID · 25",
+   "title": "位置就是主张",
+   "num": "25",
+   "tag": "QUADRANT",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "Premiere",
+     "sub": "重 · 全能",
+     "pos": [
+      0.16,
+      0.8
+     ]
+    },
+    {
+     "id": "b",
+     "label": "剪映",
+     "sub": "轻 · 够用",
+     "pos": [
+      0.8,
+      0.3
+     ]
+    },
+    {
+     "id": "c",
+     "label": "DaVinci",
+     "sub": "重 · 免费",
+     "pos": [
+      0.22,
+      0.3
+     ]
+    },
+    {
+     "id": "d",
+     "label": "代码出片",
+     "sub": "轻 · 可复用",
+     "pos": [
+      0.82,
+      0.82
+     ]
+    }
+   ],
+   "accent": "d",
+   "axes": {
+    "x": [
+     "上手慢",
+     "上手快"
+    ],
+    "y": [
+     "一次性",
+     "能复用"
+    ]
+   }
+  },
+  {
+   "id": "comparison",
+   "type": "comparison",
+   "eyebrow": "GRID · 26",
+   "title": "两种做法，一个问题",
+   "num": "26",
+   "tag": "COMPARISON",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "手冲",
+     "sub": "14 分钟 · 一杯"
+    },
+    {
+     "id": "b",
+     "label": "意式",
+     "sub": "40 秒 · 一杯"
+    }
+   ],
+   "accent": "b",
+   "cols": 2
+  },
+  {
+   "id": "bento",
+   "type": "bento",
+   "eyebrow": "GRID · 27",
+   "title": "格子不一样大，因为分量不一样",
+   "num": "27",
+   "tag": "BENTO",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "本周唯一的大事",
+     "sub": "上线了 v2",
+     "span": 2
+    },
+    {
+     "id": "b",
+     "label": "读完 3 本"
+    },
+    {
+     "id": "c",
+     "label": "跑了 21km"
+    },
+    {
+     "id": "d",
+     "label": "拒了 2 个活",
+     "span": 2
+    },
+    {
+     "id": "e",
+     "label": "睡眠 6.4h"
+    }
+   ],
+   "accent": "a",
+   "cols": 3
+  },
+  {
+   "id": "table",
+   "type": "table",
+   "eyebrow": "GRID · 28",
+   "title": "表就是表，别装成图",
+   "num": "28",
+   "tag": "TABLE",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "型号"
+    },
+    {
+     "id": "b",
+     "label": "指向性"
+    },
+    {
+     "id": "c",
+     "label": "价格"
+    },
+    {
+     "id": "d",
+     "label": "MV7"
+    },
+    {
+     "id": "e",
+     "label": "心形"
+    },
+    {
+     "id": "f",
+     "label": "¥1,799"
+    }
+   ],
+   "accent": "f",
+   "cols": 3
+  },
+  {
+   "id": "spec-rows",
+   "type": "spec-rows",
+   "eyebrow": "GRID · 29",
+   "title": "关于这支片子本身的事实",
+   "num": "29",
+   "tag": "SPEC ROWS",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "时长",
+     "sub": "3:12"
+    },
+    {
+     "id": "b",
+     "label": "画幅",
+     "sub": "1080×1920"
+    },
+    {
+     "id": "c",
+     "label": "帧率",
+     "sub": "30fps"
+    },
+    {
+     "id": "d",
+     "label": "码率",
+     "sub": "12 Mbps"
+    }
+   ],
+   "accent": "a",
+   "cols": 2
+  },
+  {
+   "id": "swimlane",
+   "type": "swimlane",
+   "eyebrow": "GRID · 30",
+   "title": "行说是谁，列说是什么时候",
+   "num": "30",
+   "tag": "SWIMLANE",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "定选题",
+     "lane": "主编",
+     "col": 0
+    },
+    {
+     "id": "b",
+     "label": "过脚本",
+     "lane": "主编",
+     "col": 2
+    },
+    {
+     "id": "c",
+     "label": "写脚本",
+     "lane": "编导",
+     "col": 1
+    },
+    {
+     "id": "d",
+     "label": "拍摄",
+     "lane": "编导",
+     "col": 3
+    },
+    {
+     "id": "e",
+     "label": "粗剪",
+     "lane": "剪辑",
+     "col": 4
+    },
+    {
+     "id": "f",
+     "label": "上线",
+     "lane": "剪辑",
+     "col": 5
+    }
+   ],
+   "accent": "f"
+  },
+  {
+   "id": "gantt",
+   "type": "gantt",
+   "eyebrow": "GRID · 31",
+   "title": "条的长短是天数，重叠才是重点",
+   "num": "31",
+   "tag": "GANTT",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "脚本",
+     "start": 0,
+     "end": 2,
+     "sub": "D0–D2"
+    },
+    {
+     "id": "b",
+     "label": "拍摄",
+     "start": 1.5,
+     "end": 4,
+     "sub": "D1.5–D4"
+    },
+    {
+     "id": "c",
+     "label": "粗剪",
+     "start": 3.5,
+     "end": 6,
+     "sub": "D3.5–D6"
+    },
+    {
+     "id": "d",
+     "label": "配乐",
+     "start": 5,
+     "end": 7,
+     "sub": "D5–D7"
+    }
+   ],
+   "accent": "b",
+   "ticks": [
+    {
+     "at": 0,
+     "label": "周一"
+    },
+    {
+     "at": 3,
+     "label": "周四"
+    },
+    {
+     "at": 7,
+     "label": "下周一"
+    }
+   ]
+  },
+  {
+   "id": "er",
+   "type": "er",
+   "eyebrow": "GRID · 32",
+   "title": "实体要带字段，关系才可查",
+   "num": "32",
+   "tag": "ER",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "作者",
+     "fields": [
+      "id",
+      "笔名",
+      "签约日期"
+     ]
+    },
+    {
+     "id": "b",
+     "label": "文章",
+     "fields": [
+      "id",
+      "标题",
+      "author_id",
+      "发布时间"
+     ]
+    },
+    {
+     "id": "c",
+     "label": "标签",
+     "fields": [
+      "id",
+      "名称"
+     ]
+    }
+   ],
+   "edges": [
+    {
+     "from": "a",
+     "to": "b",
+     "label": "1 — n"
+    },
+    {
+     "from": "b",
+     "to": "c",
+     "label": "n — n"
+    }
+   ],
+   "accent": "b"
+  },
+  {
+   "id": "venn",
+   "type": "venn",
+   "eyebrow": "FIELD · 33",
+   "title": "重叠的地方才是要说的",
+   "num": "33",
+   "tag": "VENN",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "会拍",
+     "sub": "镜头语言",
+     "kind": "set",
+     "pos": [
+      0.38,
+      0.52
+     ]
+    },
+    {
+     "id": "b",
+     "label": "会写",
+     "sub": "结构与句子",
+     "kind": "set",
+     "pos": [
+      0.62,
+      0.52
+     ]
+    },
+    {
+     "id": "c",
+     "label": "能一个人出片",
+     "sub": "the overlap",
+     "pos": [
+      0.5,
+      0.52
+     ]
+    }
+   ],
+   "accent": "c"
+  },
+  {
+   "id": "network",
+   "type": "network",
+   "eyebrow": "FIELD · 34",
+   "title": "只有相邻，没有先后",
+   "num": "34",
+   "tag": "NETWORK",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "咖啡馆",
+     "pos": [
+      0.3,
+      0.72
+     ]
+    },
+    {
+     "id": "b",
+     "label": "书店",
+     "pos": [
+      0.55,
+      0.85
+     ]
+    },
+    {
+     "id": "c",
+     "label": "洗衣店",
+     "pos": [
+      0.72,
+      0.55
+     ]
+    },
+    {
+     "id": "d",
+     "label": "菜场",
+     "pos": [
+      0.45,
+      0.35
+     ]
+    },
+    {
+     "id": "e",
+     "label": "地铁口",
+     "pos": [
+      0.68,
+      0.22
+     ]
+    }
+   ],
+   "edges": [
+    {
+     "from": "a",
+     "to": "b",
+     "kind": "dashed"
+    },
+    {
+     "from": "b",
+     "to": "c",
+     "kind": "dashed"
+    },
+    {
+     "from": "a",
+     "to": "d",
+     "kind": "dashed"
+    },
+    {
+     "from": "d",
+     "to": "e",
+     "kind": "dashed"
+    },
+    {
+     "from": "c",
+     "to": "e",
+     "kind": "dashed"
+    }
+   ],
+   "accent": "d"
+  },
+  {
+   "id": "cluster",
+   "type": "cluster",
+   "eyebrow": "FIELD · 35",
+   "title": "分组才是论点，点只是证据",
+   "num": "35",
+   "tag": "CLUSTER",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "健身",
+     "pos": [
+      0.24,
+      0.72
+     ]
+    },
+    {
+     "id": "b",
+     "label": "睡眠",
+     "pos": [
+      0.34,
+      0.55
+     ]
+    },
+    {
+     "id": "c",
+     "label": "读书",
+     "pos": [
+      0.68,
+      0.74
+     ]
+    },
+    {
+     "id": "d",
+     "label": "写作",
+     "pos": [
+      0.78,
+      0.56
+     ]
+    },
+    {
+     "id": "e",
+     "label": "记账",
+     "pos": [
+      0.52,
+      0.24
+     ]
+    }
+   ],
+   "accent": "d"
+  },
+  {
+   "id": "scatter",
+   "type": "scatter",
+   "eyebrow": "FIELD · 36",
+   "title": "两个坐标都是量出来的",
+   "num": "36",
+   "tag": "SCATTER",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "第 1 期",
+     "sub": "8 分钟",
+     "pos": [
+      0.16,
+      0.28
+     ]
+    },
+    {
+     "id": "b",
+     "label": "第 6 期",
+     "sub": "14 分钟",
+     "pos": [
+      0.42,
+      0.52
+     ]
+    },
+    {
+     "id": "c",
+     "label": "第 12 期",
+     "sub": "22 分钟",
+     "pos": [
+      0.7,
+      0.46
+     ]
+    },
+    {
+     "id": "d",
+     "label": "第 18 期",
+     "sub": "31 分钟",
+     "pos": [
+      0.88,
+      0.8
+     ]
+    }
+   ],
+   "accent": "d",
+   "axes": {
+    "x": [
+     "单集更短",
+     "单集更长"
+    ],
+    "y": [
+     "完播率低",
+     "完播率高"
+    ]
+   },
+   "options": {
+    "axes": true
+   }
+  },
+  {
+   "id": "treemap",
+   "type": "treemap",
+   "eyebrow": "FIELD · 37",
+   "title": "面积就是小时数",
+   "num": "37",
+   "tag": "TREEMAP",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "剪辑",
+     "value": 14,
+     "sub": "14h"
+    },
+    {
+     "id": "b",
+     "label": "拍摄",
+     "value": 9,
+     "sub": "9h"
+    },
+    {
+     "id": "c",
+     "label": "写稿",
+     "value": 7,
+     "sub": "7h"
+    },
+    {
+     "id": "d",
+     "label": "回消息",
+     "value": 6,
+     "sub": "6h"
+    },
+    {
+     "id": "e",
+     "label": "开会",
+     "value": 4,
+     "sub": "4h"
+    }
+   ],
+   "accent": "d"
+  },
+  {
+   "id": "equation",
+   "type": "equation",
+   "eyebrow": "ROW · 38",
+   "title": "一句话，排成一行",
+   "num": "38",
+   "tag": "EQUATION",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "语义"
+    },
+    {
+     "id": "b",
+     "label": "几何"
+    },
+    {
+     "id": "c",
+     "label": "成片"
+    }
+   ],
+   "edges": [
+    {
+     "from": "a",
+     "to": "b",
+     "label": "+"
+    },
+    {
+     "from": "b",
+     "to": "c",
+     "label": "=",
+     "kind": "accent"
+    }
+   ],
+   "accent": "c"
+  },
+  {
+   "id": "stat-row",
+   "type": "stat-row",
+   "eyebrow": "ROW · 39",
+   "title": "让人记住的是数字",
+   "num": "39",
+   "tag": "STAT ROW",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "41",
+     "sub": "类型"
+    },
+    {
+     "id": "b",
+     "label": "7",
+     "sub": "布局族"
+    },
+    {
+     "id": "c",
+     "label": "16",
+     "sub": "已记录的坑"
+    }
+   ],
+   "accent": "c"
+  },
+  {
+   "id": "kpi",
+   "type": "kpi",
+   "eyebrow": "ROW · 40",
+   "title": "数字要有方向，方向要有基线",
+   "num": "40",
+   "tag": "KPI",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "↑ 34%",
+     "sub": "完播 · 对比上月"
+    },
+    {
+     "id": "b",
+     "label": "↓ 12%",
+     "sub": "退订 · 对比上月"
+    },
+    {
+     "id": "c",
+     "label": "↑ 2.1×",
+     "sub": "收藏 · 对比上月"
+    }
+   ],
+   "accent": "c"
+  },
+  {
+   "id": "tiers",
+   "type": "tiers",
+   "eyebrow": "STACK · 41",
+   "title": "档位并排就是格，不是栈",
+   "num": "41",
+   "tag": "TIERS",
+   "nodes": [
+    {
+     "id": "a",
+     "label": "自己看",
+     "sub": "免费"
+    },
+    {
+     "id": "b",
+     "label": "带社群",
+     "sub": "¥299"
+    },
+    {
+     "id": "c",
+     "label": "一对一",
+     "sub": "¥2,999"
+    }
+   ],
+   "accent": "c"
+  }
+ ]
+}

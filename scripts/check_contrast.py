@@ -123,7 +123,8 @@ def css_blocks(html: str) -> list[tuple[str, str]]:
     """(selector, body) for every rule inside <style> tags."""
     out = []
     for style in re.findall(r"<style[^>]*>(.*?)</style>", html, re.S | re.I):
-        style = re.sub(r"/\*.*?\*/", "", style, flags=re.S)
+        # Comments go, except the @on: annotation — that one is data, not prose.
+        style = re.sub(r"/\*(?!\s*@on:).*?\*/", "", style, flags=re.S)
         for sel, body in re.findall(r"([^{}]+)\{([^{}]*)\}", style):
             out.append((sel.strip(), body))
     return out
@@ -159,7 +160,12 @@ def main() -> int:
 
     profile = args.profile
     if not profile:
-        m = re.search(r'data-profile\s*=\s*["\']([\w-]+)["\']', html)
+        # Look outside <style>: the token blocks are `[data-profile="…"] { }`
+        # rules, and they come before the element that actually sets it, so
+        # searching the whole document always answers with the first profile
+        # base.css happens to define.
+        markup = re.sub(r"<style[^>]*>.*?</style>", "", html, flags=re.S | re.I)
+        m = re.search(r'data-profile\s*=\s*["\']([\w-]+)["\']', markup)
         profile = m.group(1) if m else "soft-gradient"
     try:
         tokens = load_tokens(profile)
@@ -193,7 +199,23 @@ def main() -> int:
         is_large = size_px >= LARGE_PX or (weight >= 700 and size_px >= LARGE_PX_BOLD)
         need = AA_LARGE if is_large else AA_NORMAL
 
-        for bg_name, bg in backgrounds:
+        # A role that only ever sits on one known fill says so, and is checked
+        # against that instead of the worst-case canvas. Without this the label
+        # on the dark hub is measured against white paper, fails at 1.00:1, and
+        # the only way to "fix" it is to make it unreadable where it actually
+        # sits. The annotation is a claim the author has to be right about, so
+        # keep it to fills the page really does guarantee.
+        if (om := re.search(r"/\*\s*@on:\s*([\w-]+)\s*\*/", body)):
+            tok = om.group(1)
+            if (c := resolve("var(--%s)" % tok, tokens)):
+                these = [(tok, over(c, paper))]
+            else:
+                print(f"✗ {sel}: @on:{tok} is not a token in {profile}", file=sys.stderr)
+                return 2
+        else:
+            these = backgrounds
+
+        for bg_name, bg in these:
             got = ratio(over(fg, bg), bg)
             ok = got >= need
             failures += 0 if ok else 1

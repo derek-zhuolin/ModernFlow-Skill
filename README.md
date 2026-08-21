@@ -1,117 +1,108 @@
 # ModernFlow
 
-An [Agent Skill](https://code.claude.com/docs/en/skills) for building editorial
-diagrams that move — flowcharts, loops, decision trees, layer stacks,
-comparisons — and shipping them as a still PNG, a self-playing HTML animation,
-or a narrated video.
+**Describe what a diagram *means*; get back an editorial figure that moves — solved geometry, timed beats, and a camera that pushes in on the point.** An agent skill covering 41 diagram types across 7 layout families.
 
-| `soft-gradient` | `editorial-paper` |
-| --- | --- |
-| ![](docs/demo-soft-gradient.png) | ![](docs/demo-editorial.png) |
+```bash
+git clone https://github.com/derek-zhuolin/ModernFlow-Skill ~/.claude/skills/modernflow
+```
 
-The same figure, the same classes, one attribute changed.
+[![41 diagram types, scrubbable](docs/assets/hero.png)](https://derek-zhuolin.github.io/ModernFlow-Skill/)
 
-## Why
+*↑ 4 of the 41.* **[▶ Scrub all 41 in the browser](https://derek-zhuolin.github.io/ModernFlow-Skill/)** — nothing to install. One slider drives every figure's timeline at once, so you can watch the build order, catch the camera moves, and flip both style profiles. Every card is that type's **real solver output**, so the page doubles as a smoke test.
 
-Diagrams generated on demand tend to arrive with an invented palette, arbitrary
-type, arrows that miss their boxes, and grey labels that fail an accessibility
-check. This skill supplies the missing parts: a fixed visual system, per-type
-layout contracts, a motion vocabulary, and gates that catch the failures which
-still *look* fine.
+[![CI](https://github.com/derek-zhuolin/ModernFlow-Skill/actions/workflows/ci.yml/badge.svg)](https://github.com/derek-zhuolin/ModernFlow-Skill/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/python-3.9%2B-black.svg)](https://www.python.org)
+[![deps](https://img.shields.io/badge/dependencies-none-black.svg)](#install)
+[![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](./LICENSE)
+
+**English** | [中文](./README.zh-CN.md) — the Chinese doc is the full story; this page is the tour.
+
+---
+
+## What it is
+
+You hand your agent (Claude Code / Codex / Cursor / …) a subject. It reads this skill, writes a spec that says what the figure *means*, and the solver computes every coordinate and every beat from it.
+
+**Nothing in a spec is a coordinate.** That is the whole design:
+
+| You change | What re-solves |
+|---|---|
+| a label | its box width, both edges into it, the arrowhead angle |
+| a node's order | the beat table, and every beat after it |
+| the canvas to portrait | the whole layout, not a squashed version of the landscape one |
+| the narration rate | every gap — durations stay put, floored at 300ms |
+| an accent | which node gets the ring, and where the camera goes |
+
+A hand-placed figure stops being correct the moment its content changes, and still renders. That failure has no error message, which is why this is a solver rather than a template.
+
+## Choosing the type
+
+Pick from the subject's shape, not from taste. The discriminator is one sentence you should be able to say out loud:
+
+| Your sentence | The type |
+|---|---|
+| "steps with branches, and some path ends" | `flow` |
+| "the last step feeds the first, and something accumulates" | `loop` |
+| "each level rests on the one below" | `layers` |
+| "one parent, many children — containment, not flow" | `tree` |
+| "options scored on two axes, position *is* the claim" | `quadrant` |
+| "work over calendar time, and the overlap is the point" | `gantt` |
+| "sets that share members" | `venn` |
+| "a number I want remembered" | `stat-row` |
+
+41 types, 7 geometries. **Eight of them carry their own solver** — `timeline`, `sequence`, `swimlane`, `gantt`, `radar`, `treemap`, `mindmap`, `er` — because the generic family version would state something untrue. A gantt whose bars are all one column long has lost the schedule conflict it was drawn to show.
+
+## Three tiers, one timing table
+
+| The ask | Tier | Needs | Produces |
+|---|---|---|---|
+| "make me a diagram" | **still** | a browser | `.html` + `.png` |
+| "make it animate" | **motion** | a browser | one self-playing `.html` |
+| "make a video" | **video** | HyperFrames | `.mp4` |
+
+Still and motion are the **same file** — the animation is pure CSS, so a still is that file screenshotted at a chosen moment. **HyperFrames is only for the MP4 tier.** Everything else needs nothing but Python and a browser.
+
+Any page can be frozen at any instant: append `?t=4.4` to the URL, or call `mfSeek(4.4)` in the console. `build.py --png --at 4.4` uses the same mechanism — which is why a still is reproducible instead of depending on how fast a machine reached four seconds.
+
+## The camera
+
+Motion moves the elements; the camera moves the frame. Fusing them is the usual mistake — scaling up the node you want looked at says *the node grew*, not *you got closer*, and welds the zoom to that node's entrance so it can never be re-cut.
+
+A move is a `push` / `pull` pair that are exact inverses about the same origin, so a dwell of any length exists with no JavaScript and no keyframe percentage. `camera: "auto"` is the default and picks from a seeded die — `punch`, `survey`, `drift`, or none — and **refuses on any figure with fewer than four nodes**, whatever the die says. There is nothing to go and read on a three-node figure, and a camera move with no referent is idle motion in better clothes.
+
+## Variation
+
+Eight scenes built the same way look like eight of the same scene. Varying **by index** is worse than not varying: index 0 is always the same gesture, so every deck ever built shares one rhythm.
+
+Entrances and transitions come from a **seeded permutation** instead — the same spec always yields the same film, because a re-render that quietly became a different cut would desync narration timed to the last one. The dice are constrained: no seam repeats the one before it, and distinct kinds must reach ⌈seams / 2⌉, which adjacent-difference alone does not give you (`A B A B` satisfies it and uses two kinds forever).
 
 ## Install
 
-Copy the folder into your skills directory:
-
 ```bash
-git clone https://github.com/<you>/modernflow.git ~/.claude/skills/modernflow
+git clone https://github.com/derek-zhuolin/ModernFlow-Skill ~/.claude/skills/modernflow
+python3 ~/.claude/skills/modernflow/scripts/doctor.py
 ```
 
-- **Claude Code / Agent SDK** — `~/.claude/skills/` (personal) or
-  `.claude/skills/` (project)
-- **Claude.ai** — zip the folder and upload it in Settings → Capabilities
-- **Claude API** — upload via the Skills API
+**Python 3.9+ and nothing else.** No pip, no npm, no lockfile — every script is standard library. Chrome is needed only to rasterise a PNG; without it you still get the HTML and are told so.
 
-Then just ask for a diagram. The skill loads itself when the request matches.
+Cloned somewhere else, or run more than one agent? `python3 scripts/install.py` detects Claude Code, Codex, Cursor, Gemini CLI, Crush and OpenCode and installs into each one it finds.
 
-## Requirements
+**Same picture on every machine.** The font bundle is committed — 16 subsetted faces covering both profiles, ~1.2MB — so a fresh clone renders offline and identically. A missing glyph does *not* fail: the browser substitutes a system face that usually exists on the machine that authored the page and on nobody else's. `scripts/check_fonts.py` gates against exactly that.
 
-**None** for the still and animated tiers — Python 3 (stdlib only) plus a
-browser to view. Rendering a PNG automatically also needs Chrome or Chromium.
+## Quality gates
 
-Only the MP4 tier needs anything else: [HyperFrames](https://hyperframes.heygen.com)
-(`npm i -g hyperframes`). Without it the skill still delivers a self-playing
-HTML and says so.
+Each exits non-zero and each catches something that otherwise **renders fine and is wrong**:
 
-## Use it directly
+- **Budget** — over 9 nodes, 12 edges, or 1 accent per figure; a dangling edge; an unlabelled branch out of a decision; overlapping camera moves. Checked before a single byte is written.
+- **Contrast** — every text role against every background it can sit on, at rendered size, to WCAG AA. The pale grey label that defines this register measures ~2.1:1 over a colour field, and the eye does not catch it.
+- **Glyph coverage** — every character on the page is in the shipped bundle.
+- **Determinism** — `doctor.py` solves the gallery twice and compares hashes.
+- **Look at it** — `scripts/playground.py spec.json -o out.html` puts every scene on one scrubbable page. Gate seven is only real if it is cheap.
 
-```bash
-cp assets/template.html figure.html
-# edit: the figure, the chrome text, the --at times
+## Credit
 
-python3 scripts/fetch_fonts.py figure.html --profile soft-gradient
-python3 scripts/check_contrast.py figure.html      # WCAG AA gate — must exit 0
-python3 scripts/build.py figure.html --png
-```
-
-`build.py` inlines the fonts and stylesheet, so the output is **one portable
-HTML file** that plays in any browser with no server and no network.
-
-## What's inside
-
-```
-SKILL.md                  entry point — tier routing, build loop, the rules
-reference/
-  style-profiles.md       the two visual systems, canvas sizes, backgrounds
-  diagram-types.md        when to use each type + its layout maths
-  motion-grammar.md       timing, entrances, seams, narration sync, the gates
-  video-pipeline.md       the MP4 tier
-  gotchas.md              ten failures that ship looking correct
-assets/
-  tokens.json             machine-readable style tokens
-  base.css                tokens, text roles, shapes, CSS motion vocabulary
-  template.html           a working figure to clone
-scripts/
-  fetch_fonts.py          subset fonts to the glyphs actually used
-  build.py                inline to one file; optional PNG
-  check_contrast.py       WCAG AA gate over every text role
-evals/                    three end-to-end scenarios
-```
-
-## Two profiles
-
-| | `soft-gradient` | `editorial-paper` |
-| --- | --- | --- |
-| Look | Near-white paper, blurred warm/cool colour fields, Inter 900, one blue, white cards floating on soft shadows | Warm grey paper, flat, Instrument Serif, one orange, cards drawn with hairline borders |
-| Best at | Vertical social, product explainers | Landscape figures, architecture, decision documents |
-
-Both ship **contrast-corrected**. The pale grey label this register is known
-for measures ~2.1:1 over a colour field; `scripts/check_contrast.py` found it
-and the shipped tokens are the corrected values.
-
-## Design notes
-
-**The animation is pure CSS.** Every animated element carries one inline
-`--at` start time and `stroke-dasharray` uses SVG `pathLength="1"`, so paths
-draw with no JavaScript measurement. That same timing table drives the video
-tier, so the two outputs cannot drift apart.
-
-**Layout is parametric.** Same inputs, same coordinates. Edge endpoints are
-solved from node boundaries rather than placed by eye — which is why arcs meet
-their cards on a tall ellipse, where a fixed angular gap leaves them floating.
-
-## Credits
-
-The diagram grammar — shape carries meaning, one accent per figure, explicit
-per-type layout contracts, complexity budgets — is adapted from
-[**diagram-design**](https://github.com/cathrynlavery/diagram-design) by
-Cathryn Lavery (MIT). It is a reference, not a dependency: no code from it is
-vendored or executed here. See [`NOTICE`](NOTICE) for the full breakdown of
-what was adapted and what is new.
-
-Fonts (Inter, Instrument Serif, Geist, Noto Sans SC, Noto Serif SC) are SIL
-Open Font License 1.1 and are fetched at build time, not vendored.
+The diagram grammar — shape carries meaning, per-type layout contracts, complexity budgets, one accent per figure — is adapted from [diagram-design](https://github.com/cathrynlavery/diagram-design) (MIT). A reference, not a dependency; see [NOTICE](./NOTICE).
 
 ## License
 
-MIT — see [`LICENSE`](LICENSE).
+[MIT](./LICENSE)

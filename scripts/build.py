@@ -61,6 +61,12 @@ DEFAULT_VIEWPORT = (1920, 1080)
 # settle before the screenshot. Four seconds also lets a short entrance
 # animation finish, so the PNG shows the resolved figure rather than a
 # half-faded one.
+#
+# It is a virtual clock, not a wall clock: the frame is whatever the page looks
+# like at that instant on its own timeline. Anything with a camera move or more
+# than one scene needs the moment chosen rather than defaulted, because 4s may
+# land mid-push or inside a seam. `--at` picks it; layout.py prints the resting
+# time for the figure it just wrote.
 SETTLE_MS = 4000
 
 
@@ -111,15 +117,16 @@ def inline(page: Path, skill_root: Path) -> tuple[str, list[str]]:
     return html, notes
 
 
-def render_png(chrome: str, html_path: Path, png_path: Path, size: tuple[int, int]) -> None:
+def render_png(chrome: str, html_path: Path, png_path: Path, size: tuple[int, int],
+               at: float | None = None, settle_ms: int = SETTLE_MS) -> None:
     png_path.parent.mkdir(parents=True, exist_ok=True)
     cmd = [
         chrome, "--headless", "--disable-gpu", "--hide-scrollbars",
         "--force-device-scale-factor=1",
         f"--window-size={size[0]},{size[1]}",
         f"--screenshot={png_path}",
-        f"--virtual-time-budget={SETTLE_MS}",
-        html_path.resolve().as_uri(),
+        f"--virtual-time-budget={settle_ms}",
+        html_path.resolve().as_uri() + ("?t=%g" % at if at is not None else ""),
     ]
     proc = subprocess.run(cmd, capture_output=True, text=True)
     if not png_path.exists():
@@ -137,6 +144,11 @@ def main() -> int:
     ap.add_argument("--png", nargs="?", const=True, default=False,
                     help="render a PNG; optionally give the path")
     ap.add_argument("--size", default="1920x1080", help="viewport, e.g. 1080x1920")
+    ap.add_argument("--at", type=float, default=SETTLE_MS / 1000.0,
+                    help="moment on the page's own timeline to capture, in "
+                         "seconds. Default 4. A page with a camera move or "
+                         "more than one scene needs this chosen, not defaulted "
+                         "— layout.py prints the resting time for its output.")
     ap.add_argument("--skill-root", type=Path, default=SKILL_ROOT)
     args = ap.parse_args()
 
@@ -175,7 +187,7 @@ def main() -> int:
 
     png = Path(args.png) if isinstance(args.png, str) else out.with_suffix(".png")
     try:
-        render_png(chrome, out, png, (w, h))
+        render_png(chrome, out, png, (w, h), args.at)
     except RuntimeError as e:
         print(f"✗ {e}", file=sys.stderr)
         return 4

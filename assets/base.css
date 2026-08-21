@@ -33,7 +33,7 @@
 [data-profile="soft-gradient"] {
   --paper: #fbfdfd;
   --ink: #17181a;
-  --muted: #5e6470;
+  --muted: #565c67;   /* was #5e6470 — 4.00:1 under an 11px role on the warm field */
   --soft: #585c60;
   --rule: rgba(23, 24, 26, 0.10);
   --card: #ffffff;
@@ -96,6 +96,12 @@
 }
 .mf-stage > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 
+/* The colour field belongs to soft-gradient, which is the only profile that
+   defines --glow-*. Left in place under editorial-paper the gradient stops
+   resolve to nothing and paint their fallback, so the field has to be turned
+   off by rule rather than merely unused. */
+[data-profile="editorial-paper"] .mf-field { display: none; }
+
 /* ──────────────────────────────────────────────────────── text roles ───── */
 /* Sizes are viewBox units. Author at the profile's viewBox, render at 2x. */
 
@@ -111,6 +117,15 @@
 .mf-node    { font-family: var(--font-node); font-size: 17px; font-weight: var(--w-node); fill: var(--ink); text-anchor: middle; }
 .mf-sub     { font-family: var(--font-eyebrow); font-size: 9px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; fill: var(--soft); text-anchor: middle; }
 .mf-edge    { font-family: var(--font-eyebrow); font-size: 12px; font-weight: 500; letter-spacing: 0.06em; fill: var(--muted); text-anchor: middle; }
+/* Text sitting on the dark hub. Its own roles so the contrast gate covers
+   them — an inline fill= would render fine and never be checked. */
+.mf-node-inv { /* @on: ink */ font-family: var(--font-node); font-size: 17px; font-weight: var(--w-node); fill: var(--paper); text-anchor: middle; }
+.mf-sub-inv  { /* @on: ink */ font-family: var(--font-eyebrow); font-size: 9px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; fill: var(--paper); opacity: 0.72; text-anchor: middle; }
+.mf-stat    { font-family: var(--font-display); font-size: 46px; font-weight: 900; letter-spacing: -0.03em; fill: var(--ink); text-anchor: middle; }
+.mf-statsub { font-family: var(--font-eyebrow); font-size: 11px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; fill: var(--muted); text-anchor: middle; }
+.mf-axis    { fill: none; stroke: var(--rule); stroke-width: 1; }
+.mf-rail    { fill: none; stroke: var(--arrow); stroke-width: 1.4; }
+.mf-set     { fill: rgba(0, 0, 0, 0.03); stroke: rgba(0, 0, 0, 0.28); stroke-width: 1; }
 .mf-tag     { font-family: var(--font-eyebrow); font-size: 10px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; fill: var(--soft); }
 .mf-num     { font-family: var(--font-display); font-size: 26px; font-weight: 900; letter-spacing: -0.02em; fill: var(--accent-text); }
 
@@ -195,22 +210,161 @@
   animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);   /* power4-in-out */
 }
 
-/* Arrowheads land after their line arrives, never with it. */
+/* A dashed edge cannot use mf-draw: the draw trick works by commandeering
+   stroke-dasharray, which is the same property the dash pattern lives in, so
+   one silently erases the other. Dashed lines arrive by fading up instead. */
+@keyframes mf-ink { from { opacity: 0; } to { opacity: 1; } }
+.mf-ink { animation-name: mf-ink; }
+
+/* Arrowheads land after their line arrives, never with it.
+   Put mf-tip on the POLYGON and its placement on a wrapper <g>. The keyframe
+   ends at `transform: none`, and a CSS transform beats an SVG transform
+   attribute — so an arrowhead carrying transform="translate(...)" of its own
+   snaps to the canvas origin the moment the animation finishes. It is not
+   visibly broken while it animates, which is why it survives review. */
 @keyframes mf-tip { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: none; } }
 .mf-tip { animation-name: mf-tip; animation-duration: 0.22s; }
 
 /* One-shot emphasis. Never loop this: a pulse that repeats stops reading as
    emphasis and starts reading as idle wobble. */
-@keyframes mf-flash { 0% { opacity: 1; } 35% { opacity: 0.35; } 100% { opacity: 1; } }
+/* Starts at 0, not 1. `animation-fill-mode: both` applies the `from` state
+   before the delay elapses, so a flash that begins at opacity 1 puts its
+   element on screen from the first frame of the piece — the accent ring shows
+   up before the figure it is meant to be pointing at. */
+@keyframes mf-flash { 0% { opacity: 0; } 18% { opacity: 1; } 46% { opacity: 0.35; } 100% { opacity: 1; } }
 .mf-flash { animation-name: mf-flash; animation-duration: 0.58s; }
 
 /* Transform origins must be explicit on SVG children, otherwise scale and
    translate pivot on the whole canvas instead of the element. */
 .dm, .mf-draw, .mf-tip, .mf-flash { transform-box: fill-box; transform-origin: center; }
 
+
+/* ─────────────────────────────────────────────────────────── camera ───── */
+/* A camera move is a transform on a WRAPPER group, never on the figure's own
+ * elements. Elements keep their entrances; the camera changes what the frame
+ * is looking at. Fusing the two is the classic mistake — then the zoom is
+ * welded to one node's timing and cannot be re-cut.
+ *
+ *     <g class="mf-cam mf-push" style="--at:3.2s; --zx:350px; --zy:300px; --zk:1.7">
+ *       <g class="mf-cam mf-pull" style="--at:6.0s; --zx:350px; --zy:300px; --zk:1.7">
+ *         … the whole figure …
+ *
+ * Push and pull are exact inverses about the same origin, so the outer group
+ * holds the zoom and the inner one cancels it. That is how a hold of arbitrary
+ * length is expressed with no JavaScript and no keyframe percentages: two
+ * one-shot animations, not one animation with a baked-in dwell.
+ *
+ * --zx / --zy is the point being pushed into, in viewBox units, WITH px.
+ * --cx / --cy is where that point should land — the frame centre. Defaults are
+ * for a 960×540 viewBox; override for portrait and square.
+ * --zk is the magnification. Past ~2.2 a 960-unit canvas starts showing its
+ * own stroke widths, so scale the strokes or stay under it.
+ */
+
+.mf-cam {
+  --zk: 1.6;
+  --cx: 480px;
+  --cy: 270px;
+  transform-box: view-box;
+  transform-origin: var(--zx) var(--zy);
+  animation-delay: var(--at, 0s);
+  animation-duration: var(--dur-cam, 0.62s);
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);   /* power4-in-out */
+}
+
+@keyframes mf-push {
+  from { transform: none; }
+  to   { transform: translate(calc(var(--cx) - var(--zx)), calc(var(--cy) - var(--zy)))
+                    scale(var(--zk)); }
+}
+@keyframes mf-pull {
+  from { transform: none; }
+  to   { transform: scale(calc(1 / var(--zk)))
+                    translate(calc(var(--zx) - var(--cx)), calc(var(--zy) - var(--cy))); }
+}
+.mf-push { animation-name: mf-push; }
+.mf-pull { animation-name: mf-pull; }
+
+/* Motion blur for the camera. Kept on its own nested group and expressed as an
+ * SVG filter with an explicit oversized region: a CSS `filter: blur()` on a
+ * full-frame SVG group gets clipped to the filter region Chrome derives from
+ * the bounding box, and the clip shows up as a straight edge across the
+ * artwork. Same failure as the card-lift shadow, one order of magnitude more
+ * visible. See reference/gotchas.md.
+ *
+ *     <g class="mf-cam mf-camblur" style="--at:3.2s">   ← wraps the push group
+ */
+@keyframes mf-camblur {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.86; }
+  100% { opacity: 1; }
+}
+.mf-camblur { animation-name: mf-camblur; }
+
+/* ─────────────────────────────────────────────────── scene seams ───── */
+/* A whole scene leaves as one object. Per-element exits are for elements that
+ * die inside a scene; the seam is a camera-level event.
+ *
+ * Exit direction dictates the next scene's entrance direction — pair them from
+ * the same row of the table in reference/motion-grammar.md. */
+
+.mf-scene {
+  animation-delay: var(--at, 0s);
+  animation-duration: var(--dur-seam, 0.42s);
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);   /* power3-in */
+  transform-box: view-box;
+  transform-origin: center;
+}
+
+@keyframes mf-exit-push    { from { opacity: 1; transform: none; }
+                             to   { opacity: 0; transform: translateY(-16px); } }
+@keyframes mf-exit-squeeze { from { opacity: 1; transform: none; }
+                             to   { opacity: 0; transform: translateX(-20px) scale(0.96); } }
+@keyframes mf-exit-blur    { from { opacity: 1; transform: none; }
+                             to   { opacity: 0; transform: scale(1.02); } }
+@keyframes mf-exit-zoom    { from { opacity: 1; transform: none; }
+                             to   { opacity: 0; transform: scale(1.06); } }
+/* Four transitions cover a short piece. Past about a dozen seams the "at least
+   ⌈seams/2⌉ distinct kinds" rule saturates against the vocabulary itself, and
+   a long set starts repeating a rhythm the viewer can feel. These two widen it
+   without inventing a new gesture: both are the vector law applied to the two
+   directions the first four left unused. */
+@keyframes mf-exit-drop    { from { opacity: 1; transform: none; }
+                             to   { opacity: 0; transform: translateY(16px); } }
+@keyframes mf-exit-recede  { from { opacity: 1; transform: none; }
+                             to   { opacity: 0; transform: scale(0.94); } }
+
+@keyframes mf-in-push      { from { opacity: 0; transform: translateY(16px); }
+                             to   { opacity: 1; transform: none; } }
+@keyframes mf-in-squeeze   { from { opacity: 0; transform: translateX(22px); }
+                             to   { opacity: 1; transform: none; } }
+@keyframes mf-in-blur      { from { opacity: 0; transform: scale(0.99); }
+                             to   { opacity: 1; transform: none; } }
+@keyframes mf-in-zoom      { from { opacity: 0; transform: scale(0.94); }
+                             to   { opacity: 1; transform: none; } }
+@keyframes mf-in-drop      { from { opacity: 0; transform: translateY(-16px); }
+                             to   { opacity: 1; transform: none; } }
+@keyframes mf-in-recede    { from { opacity: 0; transform: scale(1.05); }
+                             to   { opacity: 1; transform: none; } }
+
+.mf-exit-push    { animation-name: mf-exit-push; }
+.mf-exit-squeeze { animation-name: mf-exit-squeeze; }
+.mf-exit-blur    { animation-name: mf-exit-blur; }
+.mf-exit-zoom    { animation-name: mf-exit-zoom; }
+.mf-exit-drop    { animation-name: mf-exit-drop; }
+.mf-exit-recede  { animation-name: mf-exit-recede; }
+.mf-in-push      { animation-name: mf-in-push;    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+.mf-in-squeeze   { animation-name: mf-in-squeeze; animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+.mf-in-blur      { animation-name: mf-in-blur;    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+.mf-in-zoom      { animation-name: mf-in-zoom;    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+.mf-in-drop      { animation-name: mf-in-drop;    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+.mf-in-recede    { animation-name: mf-in-recede;  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+
 /* Honour the reader's setting for the standalone HTML tier. The video tier
    renders frames and is unaffected. */
 @media (prefers-reduced-motion: reduce) {
-  .dm, .mf-draw, .mf-tip, .mf-flash { animation: none !important; opacity: 1 !important;
+  .dm, .mf-draw, .mf-tip, .mf-flash, .mf-cam, .mf-scene { animation: none !important; opacity: 1 !important;
     transform: none !important; filter: none !important; stroke-dashoffset: 0 !important; }
 }

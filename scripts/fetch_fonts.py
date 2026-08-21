@@ -45,6 +45,19 @@ MAX_RETRIES = 3        # transient DNS/TLS blips almost always clear by retry 2
 # costs a visible tofu box.
 LATIN = "".join(chr(c) for c in range(0x20, 0x7F))
 
+def families_for(profile: str):
+    if profile == "all":
+        seen, out = set(), []
+        for fams in PROFILE_FAMILIES.values():
+            for f in fams:
+                key = (f[0], tuple(f[1]))
+                if key not in seen:
+                    seen.add(key)
+                    out.append(f)
+        return out
+    return PROFILE_FAMILIES[profile]
+
+
 PROFILE_FAMILIES = {
     "soft-gradient": [
         ("Inter", [500, 700, 900], "latin"),
@@ -112,7 +125,14 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("sources", nargs="+", type=Path, help="HTML/SVG files to scan")
-    ap.add_argument("--profile", choices=sorted(PROFILE_FAMILIES), default="soft-gradient")
+    ap.add_argument("--profile", default="soft-gradient",
+                    choices=sorted(PROFILE_FAMILIES) + ["all"],
+                    help="'all' bundles both profiles — what the repo ships, so a "
+                         "fresh clone renders either one with no network")
+    ap.add_argument("--charset", type=Path,
+                    help="extra characters to cover, one file of text. Unioned with "
+                         "whatever the sources use, so the shipped bundle stays a "
+                         "superset instead of shrinking to the last page built")
     ap.add_argument("--out", type=Path, default=Path("assets/fonts"))
     ap.add_argument("--href-prefix", default="assets/fonts",
                     help="path prefix written into url(), relative to the HTML document")
@@ -123,7 +143,10 @@ def main() -> int:
         print("✗ none of the given source files exist", file=sys.stderr)
         return 1
 
-    cjk = collect_cjk(sources)
+    cjk = set(collect_cjk(sources))
+    if args.charset and args.charset.exists():
+        cjk |= {ch for ch in args.charset.read_text(encoding="utf-8") if is_cjk(ord(ch))}
+    cjk = "".join(sorted(cjk))
     args.out.mkdir(parents=True, exist_ok=True)
     print(f"scanning {len(sources)} file(s) · profile {args.profile} · "
           f"{len(cjk)} CJK + {len(LATIN)} latin characters")
@@ -144,7 +167,7 @@ def main() -> int:
     ]
 
     total = 0
-    for family, weights, side in PROFILE_FAMILIES[args.profile]:
+    for family, weights, side in families_for(args.profile):
         text = cjk if side == "cjk" else LATIN
         if not text:
             continue
@@ -178,7 +201,13 @@ def main() -> int:
             ]
 
     (args.out / "fonts.css").write_text("\n".join(css_out), encoding="utf-8")
-    print(f"{total/1024:.1f}KB total → {args.out}/fonts.css")
+    # Record exactly what the bundle covers. Without this the only way to know
+    # a character is missing is to look at the render and spot a tofu box, and
+    # a fallback glyph that happens to exist locally looks fine on the machine
+    # that built it and wrong on every other one. scripts/check_fonts.py gates
+    # against this file.
+    (args.out / "charset.txt").write_text(cjk, encoding="utf-8")
+    print(f"{total/1024:.1f}KB total → {args.out}/fonts.css  ({len(cjk)} CJK covered)")
     return 0
 
 
