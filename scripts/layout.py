@@ -1471,8 +1471,7 @@ def main() -> int:
         off = round(off + b["end"] - (0.0 if last else 0.42), 2)
     print("%s  %d scene(s)  ~%ss at rate %s" % (out, len(builds), n(off), n(rate)))
     print("still frames: %s" % "  ".join("--at %s" % n(t) for t in rest))
-    print("next: python3 scripts/fetch_fonts.py %s --profile %s" %
-          (out, spec.get("profile", "soft-gradient")))
+    print("next: python3 scripts/build.py %s --png --at %s" % (out, n(rest[0])))
     return 0
 
 if __name__ == "__main__":
