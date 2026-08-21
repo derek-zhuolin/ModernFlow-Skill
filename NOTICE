@@ -30,3 +30,16 @@ execute, or require any of its code.
 Fonts referenced by this skill (Inter, Instrument Serif, Geist, Noto Sans SC,
 Noto Serif SC) are licensed under the SIL Open Font License 1.1 by their
 respective authors and are fetched at build time, not vendored here.
+
+
+Bundled fonts
+-------------
+
+assets/fonts/*.woff2 are subsetted copies of Inter, Noto Sans SC, Noto Serif SC,
+Instrument Serif, Geist and Geist Mono, redistributed under the SIL Open Font
+License 1.1. Copyright notices and the full licence text travel with them in
+assets/fonts/OFL.txt, which is what the licence requires.
+
+They are committed rather than downloaded because the whole point of this skill
+is that two machines render the same picture, and a font that is absent does not
+raise an error — the browser substitutes whatever the local system has.

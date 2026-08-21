@@ -84,7 +84,9 @@ python3 ~/.claude/skills/modernflow/scripts/doctor.py
 
 clone 到了别处，或者同时装了好几个 agent？`python3 scripts/install.py` 会探测 Claude Code / Codex / Cursor / Gemini CLI / Crush / OpenCode，装进每一个找得到的。
 
-**换台电脑出的图一模一样。** 字体包是提交进仓库的——16 个子集化字面，覆盖两套 profile，约 1.2MB——所以新 clone 离线也能渲，而且渲出来一样。缺字形**不会报错**：浏览器会拿一个系统字体顶上，那个字体通常在做图那台机器上有，在别人机器上没有。`scripts/check_fonts.py` 专门守这一条。
+**换台电脑出的图一模一样。** 字体包是提交进仓库的——16 个子集化字面，覆盖两套 profile，约 1.2MB，[SIL OFL 1.1](./assets/fonts/OFL.txt)——所以新 clone 离线也能渲，而且渲出来一样。
+
+这句是验过的，不是声称的：把仓库 clone 到一个空目录、解算随附的 gallery，产出的 HTML **和** PNG 跟原目录逐字节相同。`doctor.py` 在你机器上查的就是这条性质。缺字形**不会报错**：浏览器会拿一个系统字体顶上，那个字体通常在做图那台机器上有，在别人机器上没有。`scripts/check_fonts.py` 专门守这一条。
 
 ## 质量闸
 

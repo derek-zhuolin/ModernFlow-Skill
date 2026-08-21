@@ -87,7 +87,9 @@ python3 ~/.claude/skills/modernflow/scripts/doctor.py
 
 Cloned somewhere else, or run more than one agent? `python3 scripts/install.py` detects Claude Code, Codex, Cursor, Gemini CLI, Crush and OpenCode and installs into each one it finds.
 
-**Same picture on every machine.** The font bundle is committed — 16 subsetted faces covering both profiles, ~1.2MB — so a fresh clone renders offline and identically. A missing glyph does *not* fail: the browser substitutes a system face that usually exists on the machine that authored the page and on nobody else's. `scripts/check_fonts.py` gates against exactly that.
+**Same picture on every machine.** The font bundle is committed — 16 subsetted faces covering both profiles, ~1.2MB, [SIL OFL 1.1](./assets/fonts/OFL.txt) — so a fresh clone renders offline and identically. A missing glyph does *not* fail: the browser substitutes a system face that usually exists on the machine that authored the page and on nobody else's. `scripts/check_fonts.py` gates against exactly that.
+
+Verified, not asserted: cloning this repo into an empty directory and solving the shipped gallery produces a byte-identical HTML **and** a byte-identical PNG. `doctor.py` checks the same property on your machine.
 
 ## Quality gates
 
